@@ -1,0 +1,25 @@
+<div class="orders-list">
+  <h2>Órdenes</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Mesa</th>
+        <th>Estado</th>
+        <th>Total</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let o of orders">
+        <td>{{ o.id }}</td>
+        <td>{{ o.table?.id || o.tableId }}</td>
+        <td>{{ o.status }}</td>
+        <td>{{ o.total | number:'1.2-2' }}</td>
+        <td>
+          <a [routerLink]="['/orders', o.id]">Ver</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

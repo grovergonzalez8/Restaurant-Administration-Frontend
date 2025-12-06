@@ -1,0 +1,11 @@
+<div class="order-detail" *ngIf="order">
+  <h2>Orden {{ order.id }}</h2>
+  <p>Mesa: {{ order.table?.id || order.tableId }}</p>
+  <p>Estado: {{ order.status }}</p>
+  <p>Total: {{ order.total | number:'1.2-2' }}</p>
+
+  <h3>Items</h3>
+  <ul>
+    <li *ngFor="let it of order.items">{{ it.name || it.menuItem?.name }} — x{{ it.quantity }} — {{ it.subtotal | number:'1.2-2' }}</li>
+  </ul>
+</div>

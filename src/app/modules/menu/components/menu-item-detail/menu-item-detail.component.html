@@ -1,0 +1,6 @@
+<div class="menu-detail" *ngIf="item">
+  <h2>{{ item.name }}</h2>
+  <p>{{ item.description }}</p>
+  <p>Precio: {{ item.price | number:'1.2-2' }}</p>
+  <p>Estado: {{ item.status }}</p>
+</div>

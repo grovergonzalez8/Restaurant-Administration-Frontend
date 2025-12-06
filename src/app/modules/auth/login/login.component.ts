@@ -28,9 +28,10 @@ export class LoginComponent {
     const { email, password } = this.form.value;
     if (!email || !password) return;
     this.authService.login({ email, password }).subscribe({
-      next: () => {
+      next: (resp) => {
+        console.log('Respuesta del Login => ', resp);
         this.loginError = null;
-        this.router.navigate(['/'])
+        this.router.navigate(['/menu'])
       },
       error: (err) => {
         console.error('Login fallido', err)
