@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgIf } from '@angular/common';
 
 @Component({
@@ -19,19 +19,21 @@ export class LoginComponent {
 
   loginError: string | null = null;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute) {}
 
   submit() {
 
     if(this.form.invalid) return;
 
     const { email, password } = this.form.value;
+    const redirectTo = this.route.snapshot.queryParamMap.get('redirectTo') || '/menu';
+
     if (!email || !password) return;
     this.authService.login({ email, password }).subscribe({
       next: (resp) => {
         console.log('Respuesta del Login => ', resp);
         this.loginError = null;
-        this.router.navigate(['/menu'])
+        this.router.navigate([redirectTo])
       },
       error: (err) => {
         console.error('Login fallido', err)
