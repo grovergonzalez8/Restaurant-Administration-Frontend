@@ -1,3 +1,15 @@
 .order-detail {
-  p { margin: 4px 0; }
+  background: #fff;
+  border-top: 8px solid #e62129;
+  max-width: 760px;
+  padding: 2.5rem;
+  h2 { font-size: clamp(2.5rem, 7vw, 5rem); letter-spacing: -.07em; line-height: .9; margin: 0 0 1.5rem; }
+  h3 { font-size: .75rem; letter-spacing: .1em; margin-top: 2rem; text-transform: uppercase; }
+  p { border-top: 1px solid #deddd8; margin: 0; padding: .85rem 0; }
+  ul { list-style: none; padding: 0; }
+  li { border-top: 1px solid #deddd8; padding: .9rem 0; }
+  .status-actions { display:flex; gap:.5rem; margin:1.5rem 0; }
+  button { background:#111; border:0; color:#fff; cursor:pointer; font-weight:700; padding:.7rem .9rem; }
+  button:last-child { background:#e62129; }
+  .error { color:#b00020; }
 }

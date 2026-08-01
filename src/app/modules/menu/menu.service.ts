@@ -14,6 +14,10 @@ export class MenuService {
     return this.http.get<MenuItem[]>(this.apiUrl);
   }
 
+  available(): Observable<MenuItem[]> {
+    return this.http.get<MenuItem[]>(`${this.apiUrl}/available`);
+  }
+
   get(id: string) {
     return this.http.get<MenuItem>(`${this.apiUrl}/${id}`);
   }

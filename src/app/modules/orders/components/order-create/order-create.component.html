@@ -1,0 +1,11 @@
+<section class="order-create">
+  <div class="page-heading"><p>Nueva comanda</p><h1>Crear orden</h1></div>
+  <label>Mesa
+    <select [(ngModel)]="tableId"><option value="">Selecciona una mesa libre</option><option *ngFor="let table of tables" [value]="table.id">{{ table.name || ('Mesa ' + (table.number || table.id)) }}</option></select>
+  </label>
+  <p class="error" *ngIf="error">{{ error }}</p>
+  <div class="items">
+    <label *ngFor="let item of menu"><span>{{ item.name }}<small>{{ item.price | currency:'USD' }}</small></span><input type="number" min="0" [ngModel]="quantity(item)" (ngModelChange)="setQuantity(item, $event)"></label>
+  </div>
+  <footer><strong>Total {{ total | currency:'USD' }}</strong><button (click)="save()" [disabled]="saving">{{ saving ? 'Creando…' : 'Enviar a cocina →' }}</button></footer>
+</section>

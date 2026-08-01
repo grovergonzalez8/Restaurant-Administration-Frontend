@@ -1,11 +1,19 @@
 .orders-list {
+  .page-heading { border-bottom: 1px solid #111; margin-bottom: 2rem; padding-bottom: 1.25rem; }
+  .page-heading p { color: #e62129; font-size: .72rem; font-weight: 800; letter-spacing: .14em; margin: 0 0 .4rem; text-transform: uppercase; }
+  .page-heading h1 { display:inline-block; font-size: clamp(3.5rem, 10vw, 7rem); letter-spacing: -.09em; line-height: .75; margin: 0; }
+  .new-order { background:#e62129; color:#fff; float:right; margin-top:1.5rem; padding:.8rem 1rem; }
   table {
+    background: #fff;
+    border-top: 5px solid #111;
     width: 100%;
     border-collapse: collapse;
   }
 
   th, td {
-    padding: 8px 12px;
-    border: 1px solid #e0e0e0;
+    border-bottom: 1px solid #deddd8;
+    padding: 1rem 1.25rem;
   }
+  th { font-size: .7rem; letter-spacing: .08em; text-align: left; text-transform: uppercase; }
+  a { color: #e62129; font-weight: 800; text-decoration: none; text-transform: uppercase; font-size: .72rem; letter-spacing: .06em; }
 }

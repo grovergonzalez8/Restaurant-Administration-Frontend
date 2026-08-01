@@ -1,20 +1,22 @@
 .login-container {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  background-color: #fff;
+  background: #fff;
+  border-top: 12px solid #e62129;
+  margin: 8vh auto;
+  max-width: 480px;
+  padding: 3.5rem;
 
   h2 {
-    text-align: center;
-    margin-bottom: 1rem;
-    color: #333;
+    font-size: clamp(2.4rem, 7vw, 4.2rem);
+    letter-spacing: -.08em;
+    line-height: .88;
+    margin: .3rem 0 1.4rem;
   }
+  .eyebrow { color: #e62129; font-size: .72rem; font-weight: 800; letter-spacing: .14em; margin: 0; text-transform: uppercase; }
+  .intro { color: #5d5d5d; line-height: 1.5; margin-bottom: 2.5rem; }
 
   .global-error {
     color: #e74c3c;
-    text-align: center;
+    background: #fff1f1;
     margin-bottom: 1rem;
     font-weight: 500;
   }
@@ -25,20 +27,23 @@
     flex-direction: column;
 
     label {
-      margin-bottom: 0.5rem;
-      font-weight: 500;
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      margin-bottom: 0.55rem;
+      text-transform: uppercase;
     }
 
     input {
       padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      border: 1px solid #111;
+      border-radius: 0;
       font-size: 1rem;
 
       &:focus {
         outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 0 2px rgba(0,123,255,0.2);
+        border-color: #e62129;
+        box-shadow: 4px 4px 0 #e62129;
       }
     }
 
@@ -52,21 +57,28 @@
   button {
     width: 100%;
     padding: 0.75rem;
-    background-color: #007bff;
+    align-items: center;
+    background-color: #111;
     border: none;
-    border-radius: 4px;
+    border-radius: 0;
+    display: flex;
+    font-weight: 700;
+    justify-content: space-between;
+    letter-spacing: .04em;
     color: #fff;
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.2s;
 
     &:disabled {
-      background-color: #6c757d;
+      background-color: #aaa;
       cursor: not-allowed;
     }
 
     &:hover:not(:disabled) {
-      background-color: #0056b3;
+      background-color: #e62129;
     }
   }
 }
+
+@media (max-width: 540px) { .login-container { margin: 2rem auto; padding: 2.25rem 1.5rem; } }

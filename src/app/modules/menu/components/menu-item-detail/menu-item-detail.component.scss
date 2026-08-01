@@ -1,1 +1,35 @@
-.menu-detail { p { margin: 4px 0; } }
+.menu-detail {
+  background: #fff;
+  border-top: 8px solid #e62129;
+  max-width: 760px;
+  padding: 2.5rem;
+
+  h2 {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    letter-spacing: -.07em;
+    line-height: .9;
+    margin: 0 0 1.5rem;
+  }
+
+  p {
+    border-top: 1px solid #deddd8;
+    margin: 0;
+    padding: 1rem 0;
+  }
+}
+
+.btn-pedido {
+  margin-top: 15px;
+  background: #1e88e5;
+  border: none;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background .2s ease;
+
+  &:hover {
+    background: #1565c0;
+  }
+}

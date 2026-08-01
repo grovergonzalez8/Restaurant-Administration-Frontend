@@ -1,5 +1,7 @@
 <div class="login-container">
-  <h2>Iniciar Sesión</h2>
+  <p class="eyebrow">Restaurant Administration</p>
+  <h2>Bienvenido<br>a la operación.</h2>
+  <p class="intro">Ingresa con tus credenciales para continuar.</p>
 
   <!-- Mensaje global de error -->
   <div class="global-error" *ngIf="loginError">{{ loginError }}</div>
@@ -24,6 +26,6 @@
       </div>
     </div>
 
-    <button type="submit" [disabled]="form.invalid">Ingresar</button>
+    <button type="submit" [disabled]="form.invalid">Iniciar sesión <span>→</span></button>
   </form>
 </div>

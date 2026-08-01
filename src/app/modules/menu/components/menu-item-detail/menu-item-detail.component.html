@@ -3,4 +3,8 @@
   <p>{{ item.description }}</p>
   <p>Precio: {{ item.price | number:'1.2-2' }}</p>
   <p>Estado: {{ item.status }}</p>
+
+  <button (click)="hacerPedido()" class="btn-pedido">
+    Hacer pedido
+  </button>
 </div>

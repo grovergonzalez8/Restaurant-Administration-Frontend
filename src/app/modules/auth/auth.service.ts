@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { User } from '../../core/models/user.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
-  public user = signal<any>(null);
+  public user = signal<User | null>(this.readStoredUser());
 
   constructor(private http: HttpClient) {}
 
@@ -25,6 +26,7 @@ export class AuthService {
 
         if (user) {
           this.user.set(user);
+          localStorage.setItem('user', JSON.stringify(user));
         }
       })
     );
@@ -33,5 +35,20 @@ export class AuthService {
   logout() {
     this.user.set(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+
+  isAuthenticated(): boolean {
+    return Boolean(localStorage.getItem('token'));
+  }
+
+  private readStoredUser(): User | null {
+    try {
+      const rawUser = localStorage.getItem('user');
+      return rawUser ? JSON.parse(rawUser) as User : null;
+    } catch {
+      localStorage.removeItem('user');
+      return null;
+    }
   }
 }

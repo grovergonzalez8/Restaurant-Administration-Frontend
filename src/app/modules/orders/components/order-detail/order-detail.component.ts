@@ -12,6 +12,8 @@ import { OrdersService } from '../../orders.service';
 })
 export class OrderDetailComponent implements OnInit {
   order: any = null;
+  readonly statuses = [OrderStatus.IN_PROGRESS, OrderStatus.COMPLETED, OrderStatus.CANCELLED];
+  error = '';
 
   constructor(private route: ActivatedRoute, private ordersService: OrdersService) {}
 
@@ -19,4 +21,9 @@ export class OrderDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.ordersService.get(id).subscribe((o) => (this.order = o));
   }
+
+  updateStatus(status: OrderStatus): void {
+    this.ordersService.update(this.order.id, { status }).subscribe({ next: (order) => this.order = order, error: (response) => this.error = response.error?.message || 'No se pudo actualizar la orden.' });
+  }
 }
+import { OrderStatus } from '../../../../core/enums/order-status.enum';

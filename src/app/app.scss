@@ -1,0 +1,28 @@
+.app-header {
+  align-items: center;
+  background: #111;
+  color: #fff;
+  display: flex;
+  gap: 2rem;
+  min-height: 72px;
+  padding: 0 3vw;
+
+  a { color: inherit; text-decoration: none; }
+  .brand { font-size: 1.1rem; font-weight: 800; letter-spacing: -.04em; margin-right: auto; text-transform: uppercase; }
+  nav { display: flex; gap: 1.5rem; }
+  nav a { font-size: .78rem; font-weight: 700; letter-spacing: .08em; padding: 27px 0 24px; text-transform: uppercase; }
+  nav a.active { border-bottom: 4px solid #e62129; }
+  button { background: #e62129; border: 0; border-radius: 0; color: inherit; cursor: pointer; font-size: .75rem; font-weight: 700; letter-spacing: .06em; padding: .65rem .85rem; text-transform: uppercase; }
+}
+
+.app-content { margin: 0 auto; max-width: 1240px; padding: 3.5rem 3vw; }
+
+@media (max-width: 640px) {
+  .app-header { gap: 1rem; min-height: 60px; padding: 0 1rem; }
+  .app-header .brand { font-size: .9rem; }
+  .app-header nav { gap: .75rem; }
+  .app-header nav a { padding: 21px 0 18px; }
+  .app-header button { font-size: 0; padding: .75rem; }
+  .app-header button::after { content: '×'; font-size: 1.25rem; }
+  .app-content { padding: 2rem 1rem; }
+}
