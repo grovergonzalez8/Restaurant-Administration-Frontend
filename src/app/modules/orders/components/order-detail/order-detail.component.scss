@@ -12,4 +12,6 @@
   button { background:#111; border:0; color:#fff; cursor:pointer; font-weight:700; padding:.7rem .9rem; }
   button:last-child { background:#e62129; }
   .error { color:#b00020; }
+  .payment-actions { border-top:3px solid #e62129; margin-top:2rem; padding-top:1rem; }
+  .payment-actions span { display:block; font-size:.72rem; font-weight:800; letter-spacing:.1em; margin-bottom:.5rem; text-transform:uppercase; }
 }

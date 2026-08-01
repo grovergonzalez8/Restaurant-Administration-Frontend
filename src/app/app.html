@@ -2,6 +2,8 @@
   <a class="brand" routerLink="/menu">Restaurant Admin</a>
   <nav aria-label="Navegación principal">
     <a *ngIf="canViewDashboard()" routerLink="/dashboard" routerLinkActive="active">Panel</a>
+    <a *ngIf="canManageOperations()" routerLink="/inventory" routerLinkActive="active">Inventario</a>
+    <a *ngIf="canManageOperations()" routerLink="/reservations" routerLinkActive="active">Reservas</a>
     <a routerLink="/menu" routerLinkActive="active">Menú</a>
     <a routerLink="/orders" routerLinkActive="active">Órdenes</a>
   </nav>
