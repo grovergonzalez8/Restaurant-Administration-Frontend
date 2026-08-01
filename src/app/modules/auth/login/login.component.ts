@@ -33,7 +33,7 @@ export class LoginComponent {
       next: (resp) => {
         console.log('Respuesta del Login => ', resp);
         this.loginError = null;
-        this.router.navigate([redirectTo])
+        this.router.navigateByUrl(redirectTo);
       },
       error: (err) => {
         console.error('Login fallido', err)

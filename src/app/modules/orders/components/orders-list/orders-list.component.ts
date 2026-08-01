@@ -20,6 +20,6 @@ export class OrdersListComponent implements OnInit {
   }
 
   load() {
-    this.ordersService.list().subscribe((res) => (this.orders = res || []));
+    this.ordersService.my().subscribe((res) => (this.orders = res || []));
   }
 }

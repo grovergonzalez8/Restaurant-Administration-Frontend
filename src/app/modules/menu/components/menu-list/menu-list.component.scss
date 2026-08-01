@@ -1,69 +1,12 @@
 .menu-container {
-  max-width: 900px;
-  margin: 30px auto;
-  padding: 0 20px;
-
-  .title {
-    text-align: center;
-    margin-bottom: 25px;
-    font-size: 28px;
-    font-weight: 600;
-  }
-
-  .items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
-  }
-
-  .item-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 18px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform .15s ease, box-shadow .15s ease;
-
-    &:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    h3 {
-      margin: 0 0 6px;
-      font-size: 20px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .price {
-      font-size: 16px;
-      color: #777;
-      margin-bottom: 15px;
-    }
-
-    .btn-details {
-      background: #1e88e5;
-      border: none;
-      color: white;
-      padding: 10px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 15px;
-      transition: background .2s ease;
-
-      &:hover {
-        background: #1565c0;
-      }
-    }
-  }
-
-  .empty {
-    text-align: center;
-    color: #888;
-    font-size: 16px;
-    padding: 40px 0;
-  }
+  .page-heading { border-bottom: 1px solid #111; margin-bottom: 2rem; padding-bottom: 1.25rem; }
+  .page-heading p { color: #e62129; font-size: .72rem; font-weight: 800; letter-spacing: .14em; margin: 0 0 .4rem; text-transform: uppercase; }
+  .page-heading h1 { font-size: clamp(3.5rem, 10vw, 7rem); letter-spacing: -.09em; line-height: .75; margin: 0; }
+  .toolbar-card { background: transparent; box-shadow: none; margin-bottom: 1.25rem; padding: 0; }
+  mat-form-field { width: min(100%, 410px); }
+  table { background: #fff; border-top: 5px solid #111; width: 100%; }
+  .thumb { display: block; height: 48px; object-fit: cover; width: 64px; }
+  th { font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  td, th { border-bottom: 1px solid #deddd8; }
+  mat-paginator { background: transparent; }
 }

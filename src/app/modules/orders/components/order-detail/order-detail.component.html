@@ -3,6 +3,10 @@
   <p>Mesa: {{ order.table?.id || order.tableId }}</p>
   <p>Estado: {{ order.status }}</p>
   <p>Total: {{ order.total | number:'1.2-2' }}</p>
+  <div class="status-actions" *ngIf="order.status !== 'COMPLETED' && order.status !== 'CANCELLED'">
+    <button *ngFor="let status of statuses" (click)="updateStatus(status)">{{ status === 'IN_PROGRESS' ? 'Preparar' : status === 'COMPLETED' ? 'Completar' : 'Cancelar' }}</button>
+  </div>
+  <p class="error" *ngIf="error">{{ error }}</p>
 
   <h3>Items</h3>
   <ul>

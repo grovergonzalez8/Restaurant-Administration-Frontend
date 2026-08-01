@@ -1,0 +1,18 @@
+<section class="dashboard">
+  <header class="page-heading"><p>Control de operación</p><h1>Hoy.</h1><button (click)="load()">Actualizar ↻</button></header>
+  <p class="state" *ngIf="loading">Actualizando operación…</p>
+  <div class="error" *ngIf="error">{{ error }} <button (click)="load()">Reintentar</button></div>
+  <ng-container *ngIf="summary as data">
+    <div class="metrics">
+      <article><span>Mesas libres</span><strong>{{ data.tables?.available ?? 0 }}</strong><small>de {{ data.tables?.total ?? 0 }} mesas</small></article>
+      <article><span>Órdenes activas</span><strong>{{ (data.orders?.pending ?? 0) + (data.orders?.inProgress ?? 0) }}</strong><small>{{ data.orders?.completed ?? 0 }} completadas</small></article>
+      <article><span>Cocina</span><strong>{{ (data.kitchen?.pending ?? 0) + (data.kitchen?.inProgress ?? 0) }}</strong><small>tickets por atender</small></article>
+      <article class="alert"><span>Inventario bajo</span><strong>{{ data.inventory?.lowStock ?? 0 }}</strong><small>productos requieren atención</small></article>
+    </div>
+    <div class="overview">
+      <div><p>Capacidad</p><strong>{{ data.tables?.occupied ?? 0 }}</strong><span>mesas ocupadas</span></div>
+      <div><p>Menú</p><strong>{{ data.menu?.active ?? data.menu?.total ?? 0 }}</strong><span>productos disponibles</span></div>
+      <div><p>Servicio</p><strong>{{ data.orders?.pending ?? 0 }}</strong><span>órdenes pendientes</span></div>
+    </div>
+  </ng-container>
+</section>

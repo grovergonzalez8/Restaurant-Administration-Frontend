@@ -1,12 +1,25 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { NgIf } from '@angular/common';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AuthService } from './modules/auth/auth.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [NgIf, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('Restaurant-Administration-Frontend');
+  protected readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
+
+  canViewDashboard(): boolean {
+    const role = this.auth.user()?.role?.name?.toLowerCase();
+    return role === 'admin' || role === 'kitchen' || role === 'cocina';
+  }
 }
