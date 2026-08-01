@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { OrdersService } from '../../orders.service';
 import { PaymentsService } from '../../../payments/payments.service';
 import { PaymentMethod } from '../../../../core/models/payment.model';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-order-detail',
@@ -18,7 +19,7 @@ export class OrderDetailComponent implements OnInit {
   error = '';
   paying = false;
 
-  constructor(private route: ActivatedRoute, private ordersService: OrdersService, private payments: PaymentsService) {}
+  constructor(private route: ActivatedRoute, private ordersService: OrdersService, private payments: PaymentsService, private auth: AuthService) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id')!;
@@ -31,7 +32,12 @@ export class OrderDetailComponent implements OnInit {
 
   pay(method: PaymentMethod): void {
     this.paying = true;
-    this.payments.create(this.order.id, method).subscribe({ next: () => this.updateStatus(OrderStatus.COMPLETED), error: (response) => { this.paying = false; this.error = response.error?.message || 'No se pudo procesar el pago.'; } });
+    this.payments.create(this.order.id, method).subscribe({ next: () => { this.order = { ...this.order, status: OrderStatus.COMPLETED }; this.paying = false; }, error: (response) => { this.paying = false; this.error = response.error?.message || 'No se pudo procesar el pago.'; } });
+  }
+
+  canUpdateStatus(): boolean {
+    const role = this.auth.user()?.role?.name?.toLowerCase();
+    return role === 'admin' || role === 'kitchen' || role === 'cocina';
   }
 }
 import { OrderStatus } from '../../../../core/enums/order-status.enum';

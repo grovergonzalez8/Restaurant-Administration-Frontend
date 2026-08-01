@@ -40,4 +40,25 @@ body { margin: 0; font-family: Arial, Helvetica, sans-serif; }
 
 * { box-sizing: border-box; }
 
+:root { --ink:#111; --paper:#fff; --canvas:#f4f3ef; --signal:#e62129; --line:#d9d7d0; --muted:#66635f; }
+
+button, a, input, select { -webkit-tap-highlight-color: transparent; }
+button { transition: background .18s ease, color .18s ease, transform .18s ease; }
+button:not(:disabled):active { transform: translateY(1px); }
+button:disabled { cursor:not-allowed; opacity:.5; }
+input, select { outline-color:var(--signal); }
+
+/* Shared Swiss surfaces for all operational screens. */
+mat-card, .mat-mdc-card, .operations form, .operations table, .reservations form, .reservations .list, .order-create .items, .order-detail, .menu-detail { box-shadow:none !important; }
+.mat-mdc-table, table { border-collapse:collapse; }
+.mat-mdc-header-row, .mat-mdc-row { min-height:56px; }
+.mat-mdc-header-cell, .mat-mdc-cell { border-bottom-color:var(--line) !important; }
+.mat-mdc-header-cell { color:var(--muted) !important; font-size:.68rem !important; font-weight:800 !important; letter-spacing:.1em; text-transform:uppercase; }
+.mat-mdc-row:hover { background:#fff4f4; }
+.mat-mdc-paginator { background:transparent !important; }
+.mat-mdc-form-field { --mat-sys-on-surface-variant:var(--ink); }
+.mat-mdc-outlined-button, .mat-mdc-unelevated-button { border-radius:0 !important; font-weight:800 !important; letter-spacing:.04em; text-transform:uppercase; }
+
+@media (max-width: 640px) { table { display:block; overflow-x:auto; white-space:nowrap; } }
+
 button, input { font: inherit; }

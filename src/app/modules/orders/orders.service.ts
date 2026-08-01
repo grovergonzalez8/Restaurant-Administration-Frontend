@@ -4,6 +4,12 @@ import { Observable } from 'rxjs';
 import { Order } from '../../core/models/order.model';
 import { environment } from '../../../environments/environment';
 
+export interface CreateOrderPayload {
+  tableId: string;
+  status?: Order['status'];
+  items: Array<{ menuItemId: string; quantity: number }>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
   private apiUrl = `${environment.apiUrl}/orders`;
@@ -22,7 +28,7 @@ export class OrdersService {
     return this.http.get<Order>(`${this.apiUrl}/${id}`);
   }
 
-  create(payload: Partial<Order>) {
+  create(payload: CreateOrderPayload) {
     return this.http.post<Order>(this.apiUrl, payload);
   }
 

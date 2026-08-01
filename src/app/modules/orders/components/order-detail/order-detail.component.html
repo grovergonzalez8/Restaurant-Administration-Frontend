@@ -3,7 +3,7 @@
   <p>Mesa: {{ order.table?.id || order.tableId }}</p>
   <p>Estado: {{ order.status }}</p>
   <p>Total: {{ order.total | number:'1.2-2' }}</p>
-  <div class="status-actions" *ngIf="order.status !== 'COMPLETED' && order.status !== 'CANCELLED'">
+  <div class="status-actions" *ngIf="canUpdateStatus() && order.status !== 'COMPLETED' && order.status !== 'CANCELLED'">
     <button *ngFor="let status of statuses" (click)="updateStatus(status)">{{ status === 'IN_PROGRESS' ? 'Preparar' : status === 'COMPLETED' ? 'Completar' : 'Cancelar' }}</button>
   </div>
   <div class="payment-actions" *ngIf="order.status !== 'CANCELLED' && order.status !== 'COMPLETED'"><span>Cobrar orden</span><button (click)="pay('CASH')" [disabled]="paying">Efectivo</button><button (click)="pay('CARD')" [disabled]="paying">Tarjeta</button><button (click)="pay('QR')" [disabled]="paying">QR</button></div>
