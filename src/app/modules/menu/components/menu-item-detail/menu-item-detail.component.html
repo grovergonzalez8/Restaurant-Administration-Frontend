@@ -1,10 +1,42 @@
-<div class="menu-detail" *ngIf="item">
-  <h2>{{ item.name }}</h2>
-  <p>{{ item.description }}</p>
-  <p>Precio: {{ item.price | number:'1.2-2' }}</p>
-  <p>Estado: {{ item.status }}</p>
+<article class="menu-detail" *ngIf="item">
+  <section class="dish-visual" aria-label="Vista del plato">
+    <model-viewer
+      *ngIf="hasArModel; else dishImage"
+      [attr.src]="item.model3dUrl"
+      [attr.ios-src]="item.iosModel3dUrl || null"
+      alt="Modelo 3D de {{ item.name }}"
+      ar
+      ar-modes="webxr scene-viewer quick-look"
+      ar-scale="fixed"
+      ar-placement="floor"
+      camera-controls
+      camera-orbit="45deg 70deg 105%"
+      shadow-intensity="1"
+      touch-action="pan-y"
+    >
+      <button slot="ar-button" class="btn-ar" type="button">
+        Ver tamaño real
+      </button>
+    </model-viewer>
 
-  <button (click)="hacerPedido()" class="btn-pedido">
-    Hacer pedido
-  </button>
-</div>
+    <ng-template #dishImage>
+      <img [src]="item.imageUrl || 'https://via.placeholder.com/960x640?text=Plato'" [alt]="item.name">
+      <p class="ar-unavailable">La vista en tamaño real estará disponible cuando carguemos el modelo 3D de este plato.</p>
+    </ng-template>
+  </section>
+
+  <section class="dish-info">
+    <p class="eyebrow">Plato del menú</p>
+    <h2>{{ item.name }}</h2>
+    <p class="description">{{ item.description }}</p>
+    <p class="price">{{ item.price | currency:'USD':'symbol':'1.2-2' }}</p>
+
+    <p class="ar-hint" *ngIf="hasArModel">
+      Rota el modelo para inspeccionarlo. En un móvil compatible, toca “Ver tamaño real” y apunta la cámara a una superficie plana.
+    </p>
+
+    <button (click)="hacerPedido()" class="btn-pedido">
+      Hacer pedido
+    </button>
+  </section>
+</article>
