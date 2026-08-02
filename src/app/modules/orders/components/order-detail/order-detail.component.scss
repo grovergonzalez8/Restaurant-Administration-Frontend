@@ -14,4 +14,7 @@
   .error { color:#b00020; }
   .payment-actions { border-top:3px solid #e62129; margin-top:2rem; padding-top:1rem; }
   .payment-actions span { display:block; font-size:.72rem; font-weight:800; letter-spacing:.1em; margin-bottom:.5rem; text-transform:uppercase; }
+  .payment-actions p { border:0; padding:.5rem 0; }
+  .cash-warning { color:#8d001b; }
+  .cash-warning a { color:inherit; font-weight:800; }
 }

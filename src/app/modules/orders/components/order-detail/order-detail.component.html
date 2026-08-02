@@ -4,9 +4,18 @@
   <p>Estado: {{ order.status }}</p>
   <p>Total: {{ order.total | number:'1.2-2' }}</p>
   <div class="status-actions" *ngIf="canUpdateStatus() && order.status !== 'COMPLETED' && order.status !== 'CANCELLED'">
-    <button *ngFor="let status of statuses" (click)="updateStatus(status)">{{ status === 'IN_PROGRESS' ? 'Preparar' : status === 'COMPLETED' ? 'Completar' : 'Cancelar' }}</button>
+    <button *ngFor="let status of statuses" (click)="updateStatus(status)">{{ status === 'IN_PROGRESS' ? 'En preparación' : 'Cancelar' }}</button>
   </div>
-  <div class="payment-actions" *ngIf="order.status !== 'CANCELLED' && order.status !== 'COMPLETED'"><span>Cobrar orden</span><button (click)="pay('CASH')" [disabled]="paying">Efectivo</button><button (click)="pay('CARD')" [disabled]="paying">Tarjeta</button><button (click)="pay('QR')" [disabled]="paying">QR</button></div>
+  <div class="payment-actions" *ngIf="canCollectPayment() && order.status !== 'CANCELLED' && order.status !== 'COMPLETED'">
+    <span>Cobrar orden</span>
+    <p *ngIf="checkingCash">Verificando caja…</p>
+    <p class="cash-warning" *ngIf="!checkingCash && !cashSession">Debes <a routerLink="/cash">abrir una caja</a> antes de cobrar.</p>
+    <ng-container *ngIf="cashSession">
+      <button (click)="pay('CASH')" [disabled]="paying">Efectivo</button>
+      <button (click)="pay('CARD')" [disabled]="paying">Tarjeta</button>
+      <button (click)="pay('QR')" [disabled]="paying">QR</button>
+    </ng-container>
+  </div>
   <p class="error" *ngIf="error">{{ error }}</p>
 
   <h3>Items</h3>
