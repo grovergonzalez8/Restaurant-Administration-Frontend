@@ -22,4 +22,11 @@ export class App {
     const role = this.auth.user()?.role?.name?.toLowerCase();
     return role === 'admin' || role === 'kitchen' || role === 'cocina';
   }
+
+  canManageOperations(): boolean {
+    const role = this.auth.user()?.role?.name?.toLowerCase();
+    return role === 'admin' || role === 'kitchen' || role === 'cocina' || role === 'host';
+  }
+
+  isAdmin(): boolean { return this.auth.user()?.role?.name?.toLowerCase() === 'admin'; }
 }

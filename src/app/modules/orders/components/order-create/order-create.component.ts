@@ -18,7 +18,7 @@ export class OrderCreateComponent implements OnInit {
   menu: MenuItem[] = [];
   tables: RestaurantTable[] = [];
   quantities: Record<string, number> = {};
-  tableId: string | number = '';
+  tableId = '';
   error = '';
   saving = false;
 
@@ -36,10 +36,10 @@ export class OrderCreateComponent implements OnInit {
   save(): void {
     if (!this.tableId || !this.selected.length) { this.error = 'Indica una mesa y al menos un producto.'; return; }
     this.saving = true; this.error = '';
-    const items = this.selected.map((item) => ({ menuItemId: item.id!, quantity: this.quantity(item), unitPrice: item.price, subtotal: item.price * this.quantity(item) }));
-    this.ordersService.create({ tableId: this.tableId, items, total: this.total, status: OrderStatus.PENDING }).subscribe({
+    const items = this.selected.map((item) => ({ menuItemId: item.id!, quantity: this.quantity(item) }));
+    this.ordersService.create({ tableId: this.tableId, items, status: OrderStatus.PENDING }).subscribe({
       next: (order) => this.router.navigate(['/orders', order.id]),
-      error: (response) => { this.saving = false; this.error = response.error?.message || 'No se pudo crear la orden. Verifica el estado de la mesa.'; },
+      error: (response) => { this.saving = false; const message = response.error?.message; this.error = Array.isArray(message) ? message.join(' ') : message || 'No se pudo crear la orden. Verifica el estado de la mesa.'; },
     });
   }
 }

@@ -4,10 +4,18 @@ import { ordersRoutes } from './modules/orders/orders.routes';
 import { menuRoutes } from './modules/menu/menu.routes';
 import { authGuard } from './modules/auth/auth.guard';
 import { DashboardComponent } from './modules/dashboard/dashboard.component';
+import { InventoryComponent } from './modules/inventory/inventory.component';
+import { ReservationsComponent } from './modules/reservations/reservations.component';
+import { RecipesComponent } from './modules/recipes/recipes.component';
+import { ReportsComponent } from './modules/reports/reports.component';
 
 export const routes: Routes = [
     ...authRoutes,
     { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+    { path: 'inventory', component: InventoryComponent, canActivate: [authGuard] },
+    { path: 'reservations', component: ReservationsComponent, canActivate: [authGuard] },
+    { path: 'recipes', component: RecipesComponent, canActivate: [authGuard] },
+    { path: 'reports', component: ReportsComponent, canActivate: [authGuard] },
     ...ordersRoutes.map((route) => ({ ...route, canActivate: [authGuard] })),
     ...menuRoutes.map((route) => ({ ...route, canActivate: [authGuard] })),
     { path: '', redirectTo: 'menu', pathMatch: 'full' },

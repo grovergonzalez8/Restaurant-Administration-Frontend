@@ -4,18 +4,21 @@
   color: #fff;
   display: flex;
   gap: 2rem;
-  min-height: 72px;
+  border-bottom: 1px solid #343434;
+  min-height: 76px;
   padding: 0 3vw;
 
   a { color: inherit; text-decoration: none; }
-  .brand { font-size: 1.1rem; font-weight: 800; letter-spacing: -.04em; margin-right: auto; text-transform: uppercase; }
+  .brand { align-items:center; display:flex; font-size: 1.1rem; font-weight: 800; letter-spacing: -.04em; margin-right: auto; text-transform: uppercase; }
+  .brand::before { background:#e62129; content:''; height:14px; margin-right:.55rem; width:14px; }
   nav { display: flex; gap: 1.5rem; }
   nav a { font-size: .78rem; font-weight: 700; letter-spacing: .08em; padding: 27px 0 24px; text-transform: uppercase; }
   nav a.active { border-bottom: 4px solid #e62129; }
   button { background: #e62129; border: 0; border-radius: 0; color: inherit; cursor: pointer; font-size: .75rem; font-weight: 700; letter-spacing: .06em; padding: .65rem .85rem; text-transform: uppercase; }
+  button:hover { background:#fff; color:#111; }
 }
 
-.app-content { margin: 0 auto; max-width: 1240px; padding: 3.5rem 3vw; }
+.app-content { margin: 0 auto; max-width: 1240px; min-height:calc(100vh - 76px); padding: 3.5rem 3vw; }
 
 @media (max-width: 640px) {
   .app-header { gap: 1rem; min-height: 60px; padding: 0 1rem; }
