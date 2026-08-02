@@ -17,5 +17,6 @@ export interface DashboardSummary {
   inventory?: DashboardMetric;
   sales?: { payments: number; total: number };
   reservations?: { pending: number; confirmed: number };
+  cashSessions?: { open: number };
   lowStock?: Array<{ id: string; name: string; quantity: number; unit: string }>;
 }

@@ -14,6 +14,7 @@
       <div><p>Menú</p><strong>{{ data.menu?.available ?? data.menu?.total ?? 0 }}</strong><span>productos disponibles</span></div>
       <div><p>Ventas</p><strong>{{ data.sales?.total ?? 0 | currency:'USD' }}</strong><span>{{ data.sales?.payments ?? 0 }} pagos registrados</span></div>
       <div><p>Reservas</p><strong>{{ (data.reservations?.pending ?? 0) + (data.reservations?.confirmed ?? 0) }}</strong><span>pendientes y confirmadas</span></div>
+      <div><p>Cajas abiertas</p><strong>{{ data.cashSessions?.open ?? 0 }}</strong><span>turnos operativos</span></div>
     </div>
   </ng-container>
 </section>

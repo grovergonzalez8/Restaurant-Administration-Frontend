@@ -6,6 +6,7 @@
     <a *ngIf="canManageOperations()" routerLink="/recipes" routerLinkActive="active">Recetas</a>
     <a *ngIf="canManageOperations()" routerLink="/reservations" routerLinkActive="active">Reservas</a>
     <a *ngIf="isAdmin()" routerLink="/reports" routerLinkActive="active">Reportes</a>
+    <a *ngIf="canManageCash()" routerLink="/cash" routerLinkActive="active">Caja</a>
     <a routerLink="/menu" routerLinkActive="active">Menú</a>
     <a routerLink="/orders" routerLinkActive="active">Órdenes</a>
   </nav>

@@ -29,4 +29,9 @@ export class App {
   }
 
   isAdmin(): boolean { return this.auth.user()?.role?.name?.toLowerCase() === 'admin'; }
+
+  canManageCash(): boolean {
+    const role = this.auth.user()?.role?.name?.toLowerCase();
+    return role === 'admin' || role === 'waiter' || role === 'mesero';
+  }
 }

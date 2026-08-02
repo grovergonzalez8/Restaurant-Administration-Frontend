@@ -1,0 +1,80 @@
+<section class="cash-sessions">
+  <header class="page-heading">
+    <p>Operación / turno</p>
+    <h1>Caja</h1>
+    <button type="button" (click)="load()" [disabled]="loading">Actualizar ↻</button>
+  </header>
+
+  <p class="state" *ngIf="loading">Consultando caja…</p>
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <ng-container *ngIf="!loading">
+    <div class="layout" *ngIf="currentSession as session; else openCash">
+      <article class="panel current">
+        <span class="eyebrow">Turno abierto</span>
+        <h2>{{ session.openedBy.name }}</h2>
+        <p>Desde {{ session.openedAt | date:'short' }}</p>
+        <dl *ngIf="summary as totals">
+          <div><dt>Saldo inicial</dt><dd>{{ session.openingBalance | currency:'USD' }}</dd></div>
+          <div><dt>Ventas</dt><dd>{{ totals.totalSales | currency:'USD' }}</dd></div>
+          <div><dt>Efectivo esperado</dt><dd>{{ totals.expectedCash | currency:'USD' }}</dd></div>
+          <div><dt>Pagos</dt><dd>{{ totals.payments }}</dd></div>
+        </dl>
+      </article>
+
+      <article class="panel methods" *ngIf="summary as totals">
+        <h2>Ventas por método</h2>
+        <div><span>Efectivo</span><strong>{{ totals.byMethod.CASH | currency:'USD' }}</strong></div>
+        <div><span>Tarjeta</span><strong>{{ totals.byMethod.CARD | currency:'USD' }}</strong></div>
+        <div><span>QR</span><strong>{{ totals.byMethod.QR | currency:'USD' }}</strong></div>
+      </article>
+
+      <form class="panel close" (ngSubmit)="close()">
+        <span class="eyebrow">Arqueo</span>
+        <h2>Cerrar caja</h2>
+        <label for="closingBalance">Efectivo contado</label>
+        <input id="closingBalance" name="closingBalance" type="number" min="0" step="0.01" required [(ngModel)]="closingBalance">
+        <small *ngIf="summary">Esperado en efectivo: {{ summary.expectedCash | currency:'USD' }}</small>
+        <button type="submit" [disabled]="saving">{{ saving ? 'Cerrando…' : 'Cerrar turno' }}</button>
+      </form>
+    </div>
+
+    <ng-template #openCash>
+      <form class="panel opening" (ngSubmit)="open()">
+        <span class="eyebrow">Inicio de turno</span>
+        <h2>Abrir caja</h2>
+        <p>Registra el efectivo disponible antes de recibir pagos.</p>
+        <label for="openingBalance">Saldo inicial</label>
+        <input id="openingBalance" name="openingBalance" type="number" min="0" step="0.01" required [(ngModel)]="openingBalance">
+        <button type="submit" [disabled]="saving">{{ saving ? 'Abriendo…' : 'Abrir caja' }}</button>
+      </form>
+
+      <article class="closed-result" *ngIf="lastClosed as closed">
+        <strong>Caja cerrada correctamente.</strong>
+        <span>Esperado: {{ closed.expectedBalance | currency:'USD' }}</span>
+        <span>Contado: {{ closed.closingBalance | currency:'USD' }}</span>
+        <span [class.negative]="(closed.difference ?? 0) < 0">Diferencia: {{ closed.difference | currency:'USD' }}</span>
+      </article>
+    </ng-template>
+
+    <section class="history" *ngIf="isAdmin">
+      <h2>Historial de cajas</h2>
+      <p *ngIf="!sessions.length">No hay turnos registrados.</p>
+      <div class="table-wrap" *ngIf="sessions.length">
+        <table>
+          <thead><tr><th>Responsable</th><th>Apertura</th><th>Estado</th><th>Inicial</th><th>Cierre</th><th>Diferencia</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let session of sessions">
+              <td>{{ session.openedBy.name }}</td>
+              <td>{{ session.openedAt | date:'short' }}</td>
+              <td>{{ session.status === 'OPEN' ? 'Abierta' : 'Cerrada' }}</td>
+              <td>{{ session.openingBalance | currency:'USD' }}</td>
+              <td>{{ session.closingBalance == null ? '—' : (session.closingBalance | currency:'USD') }}</td>
+              <td>{{ session.difference == null ? '—' : (session.difference | currency:'USD') }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </ng-container>
+</section>
