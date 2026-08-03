@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './modules/auth/auth.service';
+import { defaultRouteForRole, normalizeRole, StaffRole } from './modules/auth/role-access';
 
 @Component({
   selector: 'app-root',
@@ -18,25 +19,40 @@ export class App {
     this.router.navigate(['/login']);
   }
 
+  homeRoute(): string {
+    return defaultRouteForRole(this.auth.user()?.role?.name);
+  }
+
+  private hasRole(...roles: StaffRole[]): boolean {
+    const role = normalizeRole(this.auth.user()?.role?.name);
+    return role ? roles.includes(role) : false;
+  }
+
   canViewDashboard(): boolean {
-    const role = this.auth.user()?.role?.name?.toLowerCase();
-    return role === 'admin' || role === 'kitchen' || role === 'cocina';
+    return this.hasRole('admin', 'kitchen');
   }
 
-  canManageOperations(): boolean {
-    const role = this.auth.user()?.role?.name?.toLowerCase();
-    return role === 'admin' || role === 'kitchen' || role === 'cocina' || role === 'host';
+  canViewKitchenResources(): boolean {
+    return this.hasRole('admin', 'kitchen');
   }
 
-  isAdmin(): boolean { return this.auth.user()?.role?.name?.toLowerCase() === 'admin'; }
+  canManageReservations(): boolean {
+    return this.hasRole('admin', 'host');
+  }
+
+  isAdmin(): boolean {
+    return this.hasRole('admin');
+  }
 
   canManageCash(): boolean {
-    const role = this.auth.user()?.role?.name?.toLowerCase();
-    return role === 'admin' || role === 'waiter' || role === 'mesero';
+    return this.hasRole('admin', 'waiter');
   }
 
   canManageKitchen(): boolean {
-    const role = this.auth.user()?.role?.name?.toLowerCase();
-    return role === 'admin' || role === 'kitchen' || role === 'cocina';
+    return this.hasRole('admin', 'kitchen');
+  }
+
+  canViewOrders(): boolean {
+    return this.hasRole('admin', 'kitchen', 'waiter');
   }
 }

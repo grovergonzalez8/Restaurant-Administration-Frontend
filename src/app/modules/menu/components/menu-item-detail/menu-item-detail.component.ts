@@ -1,9 +1,11 @@
 import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MenuService } from '../../menu.service';
 import { MenuItem } from '../../../../core/models/menu-item.model';
 import '@google/model-viewer';
+import { AuthService } from '../../../auth/auth.service';
+import { normalizeRole } from '../../../auth/role-access';
 
 @Component({
   selector: 'app-menu-item-detail',
@@ -19,7 +21,7 @@ export class MenuItemDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute, 
     private menuService: MenuService,
-    private router: Router   
+    private auth: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -27,19 +29,9 @@ export class MenuItemDetailComponent implements OnInit {
     this.menuService.get(id).subscribe((i) => (this.item = i));
   }
 
-  hacerPedido() {
-    if (!this.item) {
-      return;
-    }
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      this.router.navigate(['/auth/login'],{
-        queryParams: { redirectTo: `/menu/${this.item.id}` }
-      });
-      return;
-    }
-    console.log('Hacer pedido del item:', this.item);
+  canCreateOrder(): boolean {
+    const role = normalizeRole(this.auth.user()?.role?.name);
+    return role === 'admin' || role === 'waiter';
   }
 
   get hasArModel(): boolean {

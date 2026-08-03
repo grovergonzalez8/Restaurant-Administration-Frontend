@@ -35,8 +35,6 @@
       Rota el modelo para inspeccionarlo. En un móvil compatible, toca “Ver tamaño real” y apunta la cámara a una superficie plana.
     </p>
 
-    <button (click)="hacerPedido()" class="btn-pedido">
-      Hacer pedido
-    </button>
+    <a *ngIf="canCreateOrder()" routerLink="/orders/new" class="btn-pedido">Tomar pedido</a>
   </section>
 </article>

@@ -1,15 +1,25 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { of } from 'rxjs';
 import { AuthService } from '../auth.service';
 import { LoginComponent } from './login.component';
 
 describe('LoginComponent', () => {
+  let router: jasmine.SpyObj<Router>;
+
   beforeEach(async () => {
+    router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
     await TestBed.configureTestingModule({
       imports: [LoginComponent],
       providers: [
-        provideRouter([]),
-        { provide: AuthService, useValue: { login: () => undefined } },
+        { provide: Router, useValue: router },
+        {
+          provide: AuthService,
+          useValue: {
+            login: () => of({}),
+            user: () => ({ role: { name: 'waiter' } }),
+          },
+        },
         { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => null } } } },
       ],
     }).compileComponents();
@@ -25,5 +35,14 @@ describe('LoginComponent', () => {
     expect(email.autocomplete).toBe('email');
     expect(password.labels?.[0].textContent).toContain('Contraseña');
     expect(password.autocomplete).toBe('current-password');
+  });
+
+  it('redirects a waiter to the orders workspace after login', () => {
+    const component = TestBed.createComponent(LoginComponent).componentInstance;
+    component.form.setValue({ email: 'waiter@restaurant.test', password: 'secret' });
+
+    component.submit();
+
+    expect(router.navigateByUrl).toHaveBeenCalledOnceWith('/orders');
   });
 });

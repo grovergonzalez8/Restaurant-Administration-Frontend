@@ -9,8 +9,10 @@ import { OrdersListComponent } from './orders-list.component';
 
 describe('OrdersListComponent', () => {
   let orders: jasmine.SpyObj<OrdersService>;
+  let role = 'waiter';
 
   beforeEach(async () => {
+    role = 'waiter';
     orders = jasmine.createSpyObj<OrdersService>('OrdersService', ['list', 'my']);
     orders.my.and.returnValue(of([]));
     orders.list.and.returnValue(of([]));
@@ -20,7 +22,7 @@ describe('OrdersListComponent', () => {
       providers: [
         provideRouter([]),
         { provide: OrdersService, useValue: orders },
-        { provide: AuthService, useValue: { user: () => ({ role: { name: 'waiter' } }) } },
+        { provide: AuthService, useValue: { user: () => ({ role: { name: role } }) } },
         { provide: RealtimeService, useValue: { on: () => undefined } },
       ],
     }).compileComponents();
@@ -52,5 +54,15 @@ describe('OrdersListComponent', () => {
 
     expect(fixture.componentInstance.error).toContain('No se pudieron cargar');
     expect(fixture.nativeElement.querySelector('.error button')?.textContent).toContain('Reintentar');
+  });
+
+  it('hides order creation from kitchen users', () => {
+    role = 'kitchen';
+    const fixture = TestBed.createComponent(OrdersListComponent);
+
+    fixture.detectChanges();
+
+    expect(orders.list).toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelector('.new-order')).toBeNull();
   });
 });

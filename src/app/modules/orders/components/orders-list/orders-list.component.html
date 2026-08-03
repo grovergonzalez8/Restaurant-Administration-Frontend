@@ -2,7 +2,7 @@
   <header class="page-heading swiss-heading">
     <p>Servicio / Tiempo real</p>
     <h1>Órdenes</h1>
-    <a class="new-order" routerLink="/orders/new">Nueva orden →</a>
+    <a class="new-order" routerLink="/orders/new" *ngIf="canCreateOrder()">Nueva orden →</a>
   </header>
 
   <p class="state" aria-live="polite" *ngIf="loading">Actualizando órdenes…</p>

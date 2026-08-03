@@ -3,6 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AuthService } from '../auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgIf } from '@angular/common';
+import { defaultRouteForRole } from '../role-access';
 
 @Component({
   selector: 'app-login.component',
@@ -26,12 +27,14 @@ export class LoginComponent {
     if(this.form.invalid) return;
 
     const { email, password } = this.form.value;
-    const redirectTo = this.route.snapshot.queryParamMap.get('redirectTo') || '/menu';
-
     if (!email || !password) return;
     this.authService.login({ email, password }).subscribe({
       next: () => {
         this.loginError = null;
+        const requestedUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        const redirectTo = requestedUrl?.startsWith('/') && !requestedUrl.startsWith('//')
+          ? requestedUrl
+          : defaultRouteForRole(this.authService.user()?.role?.name);
         this.router.navigateByUrl(redirectTo);
       },
       error: () => {

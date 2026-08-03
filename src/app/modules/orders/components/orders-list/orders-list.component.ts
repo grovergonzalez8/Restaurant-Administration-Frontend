@@ -6,6 +6,7 @@ import { AuthService } from '../../../auth/auth.service';
 import { RealtimeService } from '../../../../core/services/realtime.service';
 import { Order } from '../../../../core/models/order.model';
 import { tableLabel } from '../../../../core/models/table.model';
+import { normalizeRole } from '../../../auth/role-access';
 
 @Component({
   selector: 'app-orders-list',
@@ -31,8 +32,8 @@ export class OrdersListComponent implements OnInit {
   load(): void {
     this.loading = true;
     this.error = '';
-    const role = this.auth.user()?.role?.name?.toLowerCase();
-    const source = role === 'admin' || role === 'kitchen' || role === 'cocina' ? this.ordersService.list() : this.ordersService.my();
+    const role = normalizeRole(this.auth.user()?.role?.name);
+    const source = role === 'admin' || role === 'kitchen' ? this.ordersService.list() : this.ordersService.my();
     source.subscribe({
       next: (orders) => {
         this.orders = orders ?? [];
@@ -43,6 +44,11 @@ export class OrdersListComponent implements OnInit {
         this.error = 'No se pudieron cargar las órdenes.';
       },
     });
+  }
+
+  canCreateOrder(): boolean {
+    const role = normalizeRole(this.auth.user()?.role?.name);
+    return role === 'admin' || role === 'waiter';
   }
 
   statusLabel(status: Order['status']): string {
