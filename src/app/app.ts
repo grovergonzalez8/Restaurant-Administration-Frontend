@@ -34,4 +34,9 @@ export class App {
     const role = this.auth.user()?.role?.name?.toLowerCase();
     return role === 'admin' || role === 'waiter' || role === 'mesero';
   }
+
+  canManageKitchen(): boolean {
+    const role = this.auth.user()?.role?.name?.toLowerCase();
+    return role === 'admin' || role === 'kitchen' || role === 'cocina';
+  }
 }

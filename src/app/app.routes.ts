@@ -9,6 +9,7 @@ import { ReservationsComponent } from './modules/reservations/reservations.compo
 import { RecipesComponent } from './modules/recipes/recipes.component';
 import { ReportsComponent } from './modules/reports/reports.component';
 import { CashSessionsComponent } from './modules/cash-sessions/cash-sessions.component';
+import { KitchenComponent } from './modules/kitchen/kitchen.component';
 
 export const routes: Routes = [
     ...authRoutes,
@@ -18,6 +19,7 @@ export const routes: Routes = [
     { path: 'recipes', component: RecipesComponent, canActivate: [authGuard] },
     { path: 'reports', component: ReportsComponent, canActivate: [authGuard] },
     { path: 'cash', component: CashSessionsComponent, canActivate: [authGuard] },
+    { path: 'kitchen', component: KitchenComponent, canActivate: [authGuard] },
     ...ordersRoutes.map((route) => ({ ...route, canActivate: [authGuard] })),
     ...menuRoutes.map((route) => ({ ...route, canActivate: [authGuard] })),
     { path: '', redirectTo: 'menu', pathMatch: 'full' },
