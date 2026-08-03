@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { Payment, PaymentMethod, PaymentReceipt } from '../../core/models/payment.model';
+import {
+  Payment,
+  PaymentCheckout,
+  PaymentMethod,
+  PaymentReceipt,
+} from '../../core/models/payment.model';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentsService {
@@ -11,6 +16,10 @@ export class PaymentsService {
 
   create(orderId: string, method: PaymentMethod) {
     return this.http.post<Payment>(this.apiUrl, { orderId, method });
+  }
+
+  checkout(orderId: string) {
+    return this.http.get<PaymentCheckout>(`${this.apiUrl}/order/${orderId}/checkout`);
   }
 
   receipt(orderId: string) {

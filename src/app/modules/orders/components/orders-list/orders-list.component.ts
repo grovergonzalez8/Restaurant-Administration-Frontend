@@ -49,6 +49,7 @@ export class OrdersListComponent implements OnInit {
     const labels: Record<Order['status'], string> = {
       PENDING: 'Pendiente',
       IN_PROGRESS: 'En preparación',
+      READY: 'Lista para cobrar',
       COMPLETED: 'Completada',
       CANCELLED: 'Cancelada',
     };

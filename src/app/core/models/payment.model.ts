@@ -1,4 +1,11 @@
 export type PaymentMethod = 'CASH' | 'CARD' | 'QR';
+export type PaymentCheckoutState =
+  | 'WAITING_KITCHEN'
+  | 'OPEN_CASH_SESSION'
+  | 'READY_TO_PAY'
+  | 'PAID'
+  | 'CANCELLED';
+
 export interface Payment {
   id: string;
   orderId?: string;
@@ -6,6 +13,29 @@ export interface Payment {
   amount: number;
   method: PaymentMethod;
   createdAt?: string;
+}
+
+export interface PaymentCheckout {
+  orderId: string;
+  orderStatus: string;
+  kitchenStatus: string | null;
+  tableNumber: number;
+  total: number;
+  state: PaymentCheckoutState;
+  message: string;
+  canPay: boolean;
+  methods: PaymentMethod[];
+  cashSession: {
+    id: string;
+    openedAt: string;
+    openingBalance: number;
+  } | null;
+  payment: {
+    id: string;
+    method: PaymentMethod;
+    amount: number;
+    createdAt: string;
+  } | null;
 }
 
 export interface PaymentReceiptItem {

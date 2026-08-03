@@ -3,11 +3,15 @@ import { CommonModule, NgIf } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { OrdersService } from '../../orders.service';
 import { PaymentsService } from '../../../payments/payments.service';
-import { PaymentMethod, PaymentReceipt } from '../../../../core/models/payment.model';
+import {
+  PaymentCheckout,
+  PaymentMethod,
+  PaymentReceipt,
+} from '../../../../core/models/payment.model';
 import { AuthService } from '../../../auth/auth.service';
-import { CashSession } from '../../../../core/models/cash-session.model';
-import { CashSessionsService } from '../../../cash-sessions/cash-sessions.service';
 import { tableLabel } from '../../../../core/models/table.model';
+import { OrderStatus } from '../../../../core/enums/order-status.enum';
+import { RealtimeService } from '../../../../core/services/realtime.service';
 
 @Component({
   selector: 'app-order-detail',
@@ -21,8 +25,9 @@ export class OrderDetailComponent implements OnInit {
   readonly statuses = [OrderStatus.IN_PROGRESS, OrderStatus.CANCELLED];
   error = '';
   paying = false;
-  cashSession: CashSession | null = null;
-  checkingCash = false;
+  checkout: PaymentCheckout | null = null;
+  loadingCheckout = false;
+  checkoutError = '';
   receipt: PaymentReceipt | null = null;
   loadingReceipt = false;
   receiptError = '';
@@ -33,19 +38,19 @@ export class OrderDetailComponent implements OnInit {
     private ordersService: OrdersService,
     private payments: PaymentsService,
     private auth: AuthService,
-    private cashSessions: CashSessionsService,
-  ) {}
+    realtime: RealtimeService,
+  ) {
+    ['order.updated', 'kitchen.updated', 'payment.created'].forEach((event) =>
+      realtime.on(event, () => this.loadCheckout()),
+    );
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.ordersService.get(id).subscribe((order) => {
       this.order = order;
       if (!this.canCollectPayment()) return;
-      if (order.status === OrderStatus.COMPLETED) {
-        this.loadReceipt(id);
-      } else {
-        this.loadCashSession();
-      }
+      this.loadCheckout();
     });
   }
 
@@ -54,17 +59,17 @@ export class OrderDetailComponent implements OnInit {
   }
 
   pay(method: PaymentMethod): void {
-    if (!this.cashSession) {
-      this.error = 'Debes abrir una caja antes de registrar pagos.';
-      return;
-    }
+    if (!this.checkout?.canPay || !this.checkout.methods.includes(method)) return;
+    const methodLabel = this.paymentMethodLabel(method);
+    if (!window.confirm(`¿Confirmar pago de ${this.checkout.total} mediante ${methodLabel}?`)) return;
+
     this.paying = true;
     this.error = '';
     this.payments.create(this.order.id, method).subscribe({
       next: () => {
         this.order = { ...this.order, status: OrderStatus.COMPLETED };
         this.paying = false;
-        this.loadReceipt(this.order.id);
+        this.loadCheckout();
       },
       error: (response) => {
         this.paying = false;
@@ -87,6 +92,7 @@ export class OrderDetailComponent implements OnInit {
     const labels: Record<OrderStatus, string> = {
       [OrderStatus.PENDING]: 'Pendiente',
       [OrderStatus.IN_PROGRESS]: 'En preparación',
+      [OrderStatus.READY]: 'Lista para cobrar',
       [OrderStatus.COMPLETED]: 'Completada',
       [OrderStatus.CANCELLED]: 'Cancelada',
     };
@@ -97,16 +103,35 @@ export class OrderDetailComponent implements OnInit {
     if (this.order?.id) this.loadReceipt(this.order.id);
   }
 
-  private loadCashSession(): void {
-    this.checkingCash = true;
-    this.cashSessions.current().subscribe({
-      next: (session) => {
-        this.cashSession = session;
-        this.checkingCash = false;
+  retryCheckout(): void {
+    this.loadCheckout();
+  }
+
+  paymentMethodLabel(method: PaymentMethod): string {
+    return method === 'CASH' ? 'Efectivo' : method === 'CARD' ? 'Tarjeta' : 'QR';
+  }
+
+  private loadCheckout(): void {
+    if (!this.order?.id || !this.canCollectPayment()) return;
+    this.loadingCheckout = true;
+    this.checkoutError = '';
+    this.payments.checkout(this.order.id).subscribe({
+      next: (checkout) => {
+        this.checkout = checkout;
+        this.order = {
+          ...this.order,
+          status: checkout.orderStatus,
+          total: checkout.total,
+        };
+        this.loadingCheckout = false;
+        if (checkout.state === 'PAID' && !this.loadingReceipt && !this.receipt) {
+          this.loadReceipt(this.order.id);
+        }
       },
-      error: () => {
-        this.cashSession = null;
-        this.checkingCash = false;
+      error: (response) => {
+        this.checkout = null;
+        this.loadingCheckout = false;
+        this.checkoutError = response.error?.message || 'No se pudo consultar el estado del cobro.';
       },
     });
   }
@@ -127,4 +152,3 @@ export class OrderDetailComponent implements OnInit {
     });
   }
 }
-import { OrderStatus } from '../../../../core/enums/order-status.enum';

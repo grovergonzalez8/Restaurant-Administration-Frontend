@@ -14,17 +14,30 @@
   <div class="status-actions" *ngIf="canUpdateStatus() && order.status !== 'COMPLETED' && order.status !== 'CANCELLED'">
     <button *ngFor="let status of statuses" [class.danger]="status === 'CANCELLED'" (click)="updateStatus(status)">{{ status === 'IN_PROGRESS' ? 'Marcar en preparación' : 'Cancelar orden' }}</button>
   </div>
-  <div class="payment-actions" *ngIf="canCollectPayment() && order.status !== 'CANCELLED' && order.status !== 'COMPLETED'">
+  <section class="payment-actions" *ngIf="canCollectPayment() && checkout?.state !== 'CANCELLED'">
     <span>Pago</span>
-    <h2>Cobrar orden</h2>
-    <p aria-live="polite" *ngIf="checkingCash">Verificando caja…</p>
-    <p class="cash-warning" role="alert" *ngIf="!checkingCash && !cashSession">Debes <a routerLink="/cash">abrir una caja</a> antes de cobrar.</p>
-    <ng-container *ngIf="cashSession">
-      <button (click)="pay('CASH')" [disabled]="paying">Efectivo</button>
-      <button (click)="pay('CARD')" [disabled]="paying">Tarjeta</button>
-      <button (click)="pay('QR')" [disabled]="paying">QR</button>
+    <h2>{{ checkout?.state === 'PAID' ? 'Pago registrado' : 'Cobrar orden' }}</h2>
+    <p aria-live="polite" *ngIf="loadingCheckout">Consultando disponibilidad…</p>
+    <div class="checkout-error" role="alert" *ngIf="checkoutError">
+      <p>{{ checkoutError }}</p>
+      <button type="button" (click)="retryCheckout()">Reintentar</button>
+    </div>
+    <ng-container *ngIf="!loadingCheckout && checkout as state">
+      <p class="checkout-message" [attr.data-state]="state.state">{{ state.message }}</p>
+      <a class="cash-cta" routerLink="/cash" *ngIf="state.state === 'OPEN_CASH_SESSION'">Abrir caja</a>
+      <div class="payment-ready" *ngIf="state.canPay">
+        <strong>{{ state.total | currency:'USD' }}</strong>
+        <div class="payment-methods" aria-label="Métodos de pago disponibles">
+          <button
+            type="button"
+            *ngFor="let method of state.methods"
+            (click)="pay(method)"
+            [disabled]="paying"
+          >{{ paymentMethodLabel(method) }}</button>
+        </div>
+      </div>
     </ng-container>
-  </div>
+  </section>
   <p class="error" role="alert" *ngIf="error">{{ error }}</p>
 
   <h2 class="section-title">Productos</h2>

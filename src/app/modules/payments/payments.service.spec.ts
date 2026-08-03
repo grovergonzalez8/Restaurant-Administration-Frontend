@@ -34,4 +34,12 @@ describe('PaymentsService', () => {
     expect(request.request.body).toEqual({ orderId: 'order-1', method: 'CARD' });
     request.flush({ id: 'payment-1' });
   });
+
+  it('loads the guided checkout state for an order', () => {
+    service.checkout('order-1').subscribe();
+
+    const request = http.expectOne(`${environment.apiUrl}/payments/order/order-1/checkout`);
+    expect(request.request.method).toBe('GET');
+    request.flush({ state: 'READY_TO_PAY', canPay: true, methods: ['CASH', 'CARD', 'QR'] });
+  });
 });
