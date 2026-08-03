@@ -17,4 +17,21 @@
   .payment-actions p { border:0; padding:.5rem 0; }
   .cash-warning { color:#8d001b; }
   .cash-warning a { color:inherit; font-weight:800; }
+  .receipt-state, .receipt-error { border-left:5px solid var(--ink); margin-top:2rem; padding:1rem; }
+  .receipt-error { border-left-color:var(--signal); color:#8d001b; }
+  .receipt-error button { margin-left:.75rem; }
+  .receipt { border:1px solid var(--line); margin-top:2.5rem; padding:1.5rem; }
+  .receipt header { align-items:flex-start; border-bottom:3px solid var(--ink); display:flex; justify-content:space-between; padding-bottom:1rem; }
+  .receipt header span { display:block; font-size:.68rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+  .receipt header strong { display:block; font-size:1.5rem; margin-top:.25rem; }
+  .receipt time { color:var(--muted); font-size:.75rem; }
+  .receipt dl { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); margin:1rem 0; }
+  .receipt dl div { border-top:1px solid var(--line); padding:.65rem 0; }
+  .receipt dt { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; }
+  .receipt dd { font-size:.8rem; font-weight:800; margin:.25rem 0 0; overflow-wrap:anywhere; }
+  .receipt table { width:100%; }
+  .receipt th, .receipt td { border-bottom:1px solid var(--line); padding:.65rem .35rem; text-align:left; }
+  .receipt th { font-size:.65rem; letter-spacing:.06em; text-transform:uppercase; }
+  .receipt th:not(:first-child), .receipt td:not(:first-child) { text-align:right; }
+  .receipt tfoot td, .receipt tfoot th { border-top:3px solid var(--ink); font-weight:800; }
 }

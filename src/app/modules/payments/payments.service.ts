@@ -1,6 +1,23 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { Payment, PaymentMethod } from '../../core/models/payment.model';
+import { Payment, PaymentMethod, PaymentReceipt } from '../../core/models/payment.model';
+
 @Injectable({ providedIn: 'root' })
-export class PaymentsService { constructor(private http: HttpClient) {} create(orderId: string, method: PaymentMethod) { return this.http.post<Payment>(`${environment.apiUrl}/payments`, { orderId, method }); } list() { return this.http.get<Payment[]>(`${environment.apiUrl}/payments`); } }
+export class PaymentsService {
+  private readonly apiUrl = `${environment.apiUrl}/payments`;
+
+  constructor(private readonly http: HttpClient) {}
+
+  create(orderId: string, method: PaymentMethod) {
+    return this.http.post<Payment>(this.apiUrl, { orderId, method });
+  }
+
+  receipt(orderId: string) {
+    return this.http.get<PaymentReceipt>(`${this.apiUrl}/order/${orderId}/receipt`);
+  }
+
+  list() {
+    return this.http.get<Payment[]>(this.apiUrl);
+  }
+}
