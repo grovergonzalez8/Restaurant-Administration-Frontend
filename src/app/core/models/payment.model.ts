@@ -12,6 +12,8 @@ export interface Payment {
   order?: { id: string };
   amount: number;
   method: PaymentMethod;
+  receivedAmount?: number | null;
+  changeAmount?: number | null;
   createdAt?: string;
 }
 
@@ -34,6 +36,8 @@ export interface PaymentCheckout {
     id: string;
     method: PaymentMethod;
     amount: number;
+    receivedAmount: number | null;
+    changeAmount: number | null;
     createdAt: string;
   } | null;
 }
@@ -51,6 +55,8 @@ export interface PaymentReceipt {
   issuedAt: string;
   method: PaymentMethod;
   amount: number;
+  receivedAmount: number | null;
+  changeAmount: number | null;
   cashSessionId: string | null;
   order: {
     id: string;

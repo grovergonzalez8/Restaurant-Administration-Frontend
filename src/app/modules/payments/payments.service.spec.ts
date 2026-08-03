@@ -35,6 +35,18 @@ describe('PaymentsService', () => {
     request.flush({ id: 'payment-1' });
   });
 
+  it('sends the received amount for cash payments', () => {
+    service.create('order-1', 'CASH', 50).subscribe();
+
+    const request = http.expectOne(`${environment.apiUrl}/payments`);
+    expect(request.request.body).toEqual({
+      orderId: 'order-1',
+      method: 'CASH',
+      receivedAmount: 50,
+    });
+    request.flush({ id: 'payment-1' });
+  });
+
   it('loads the guided checkout state for an order', () => {
     service.checkout('order-1').subscribe();
 

@@ -55,6 +55,8 @@ describe('OrderDetailComponent', () => {
       id: 'payment-1',
       method: 'CASH',
       amount: 20,
+      receivedAmount: 50,
+      changeAmount: 30,
       createdAt: '2026-08-02T12:00:00.000Z',
     },
   };
@@ -63,6 +65,8 @@ describe('OrderDetailComponent', () => {
     issuedAt: '2026-08-02T12:00:00.000Z',
     method: 'CASH' as const,
     amount: 20,
+    receivedAmount: 50,
+    changeAmount: 30,
     cashSessionId: 'cash-1',
     order: {
       id: 'order-1',
@@ -139,19 +143,48 @@ describe('OrderDetailComponent', () => {
     ]);
   });
 
-  it('asks for confirmation and refreshes checkout after payment', () => {
+  it('asks for confirmation and refreshes checkout after card payment', () => {
     spyOn(window, 'confirm').and.returnValue(true);
     payments.checkout.and.returnValue(of(paidCheckout));
     const component = TestBed.createComponent(OrderDetailComponent).componentInstance;
     component.order = order;
     component.checkout = readyCheckout;
 
-    component.pay('CASH');
+    component.pay('CARD');
 
     expect(window.confirm).toHaveBeenCalled();
-    expect(payments.create).toHaveBeenCalledOnceWith('order-1', 'CASH');
+    expect(payments.create).toHaveBeenCalledOnceWith('order-1', 'CARD', undefined);
     expect(payments.checkout).toHaveBeenCalledWith('order-1');
     expect(payments.receipt).toHaveBeenCalledWith('order-1');
+  });
+
+  it('calculates change and sends received cash', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    payments.checkout.and.returnValue(of(paidCheckout));
+    const component = TestBed.createComponent(OrderDetailComponent).componentInstance;
+    component.order = order;
+    component.checkout = readyCheckout;
+    component.selectPaymentMethod('CASH');
+    component.cashReceived = 50;
+
+    expect(component.cashChange()).toBe(30);
+
+    component.confirmCashPayment();
+
+    expect(payments.create).toHaveBeenCalledOnceWith('order-1', 'CASH', 50);
+  });
+
+  it('blocks cash payment when received amount is insufficient', () => {
+    const component = TestBed.createComponent(OrderDetailComponent).componentInstance;
+    component.order = order;
+    component.checkout = readyCheckout;
+    component.selectPaymentMethod('CASH');
+    component.cashReceived = 10;
+
+    component.confirmCashPayment();
+
+    expect(payments.create).not.toHaveBeenCalled();
+    expect(component.cashError).toContain('igual o mayor');
   });
 
   it('does not create a payment when confirmation is rejected', () => {

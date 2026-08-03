@@ -14,8 +14,12 @@ export class PaymentsService {
 
   constructor(private readonly http: HttpClient) {}
 
-  create(orderId: string, method: PaymentMethod) {
-    return this.http.post<Payment>(this.apiUrl, { orderId, method });
+  create(orderId: string, method: PaymentMethod, receivedAmount?: number) {
+    return this.http.post<Payment>(this.apiUrl, {
+      orderId,
+      method,
+      ...(receivedAmount == null ? {} : { receivedAmount }),
+    });
   }
 
   checkout(orderId: string) {

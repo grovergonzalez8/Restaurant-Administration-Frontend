@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { OrdersService } from '../../orders.service';
 import { PaymentsService } from '../../../payments/payments.service';
@@ -16,7 +17,7 @@ import { RealtimeService } from '../../../../core/services/realtime.service';
 @Component({
   selector: 'app-order-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgIf],
+  imports: [CommonModule, FormsModule, RouterModule, NgIf],
   templateUrl: './order-detail.component.html',
   styleUrls: ['./order-detail.component.scss'],
 })
@@ -31,6 +32,9 @@ export class OrderDetailComponent implements OnInit {
   receipt: PaymentReceipt | null = null;
   loadingReceipt = false;
   receiptError = '';
+  selectedPaymentMethod: PaymentMethod | null = null;
+  cashReceived: number | null = null;
+  cashError = '';
   readonly tableLabel = tableLabel;
 
   constructor(
@@ -58,18 +62,58 @@ export class OrderDetailComponent implements OnInit {
     this.ordersService.update(this.order.id, { status }).subscribe({ next: (order) => this.order = order, error: (response) => this.error = response.error?.message || 'No se pudo actualizar la orden.' });
   }
 
-  pay(method: PaymentMethod): void {
+  selectPaymentMethod(method: PaymentMethod): void {
+    if (method === 'CASH') {
+      this.selectedPaymentMethod = method;
+      this.cashReceived = null;
+      this.cashError = '';
+      return;
+    }
+    this.resetCashPayment();
+    this.pay(method);
+  }
+
+  confirmCashPayment(): void {
+    if (!this.canConfirmCash()) {
+      this.cashError = 'Ingresa un monto igual o mayor al total de la orden.';
+      return;
+    }
+    this.cashError = '';
+    this.pay('CASH', Number(this.cashReceived));
+  }
+
+  canConfirmCash(): boolean {
+    if (this.cashReceived == null || !this.checkout) return false;
+    return Number.isFinite(Number(this.cashReceived)) && Number(this.cashReceived) >= this.checkout.total;
+  }
+
+  cashChange(): number {
+    if (!this.canConfirmCash() || !this.checkout) return 0;
+    return Math.round((Number(this.cashReceived) - this.checkout.total) * 100) / 100;
+  }
+
+  resetCashPayment(): void {
+    this.selectedPaymentMethod = null;
+    this.cashReceived = null;
+    this.cashError = '';
+  }
+
+  pay(method: PaymentMethod, receivedAmount?: number): void {
     if (!this.checkout?.canPay || !this.checkout.methods.includes(method)) return;
     const methodLabel = this.paymentMethodLabel(method);
     const total = Number(this.checkout.total).toFixed(2);
-    if (!window.confirm(`¿Confirmar el cobro de $${total} mediante ${methodLabel}?`)) return;
+    const cashDetail = method === 'CASH'
+      ? ` El cliente entrega $${Number(receivedAmount).toFixed(2)} y debes devolver $${this.cashChange().toFixed(2)}.`
+      : '';
+    if (!window.confirm(`¿Confirmar el cobro de $${total} mediante ${methodLabel}?${cashDetail}`)) return;
 
     this.paying = true;
     this.error = '';
-    this.payments.create(this.order.id, method).subscribe({
+    this.payments.create(this.order.id, method, receivedAmount).subscribe({
       next: () => {
         this.order = { ...this.order, status: OrderStatus.COMPLETED };
         this.paying = false;
+        this.resetCashPayment();
         this.loadCheckout();
       },
       error: (response) => {
@@ -133,6 +177,7 @@ export class OrderDetailComponent implements OnInit {
           total: checkout.total,
         };
         this.loadingCheckout = false;
+        if (!checkout.canPay) this.resetCashPayment();
         if (checkout.state === 'PAID' && !this.loadingReceipt && !this.receipt) {
           this.loadReceipt(this.order.id);
         }
