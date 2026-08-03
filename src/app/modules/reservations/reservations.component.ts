@@ -1,3 +1,211 @@
-import { Component, OnInit } from '@angular/core'; import { CommonModule } from '@angular/common'; import { FormsModule } from '@angular/forms'; import { Reservation, ReservationStatus } from '../../core/models/reservation.model'; import { RestaurantTable } from '../../core/models/table.model'; import { ReservationsService } from './reservations.service'; import { TablesService } from '../orders/tables.service';
-@Component({selector:'app-reservations',standalone:true,imports:[CommonModule,FormsModule],templateUrl:'./reservations.component.html',styleUrl:'./reservations.component.scss'})
-export class ReservationsComponent implements OnInit { reservations:Reservation[]=[]; tables:RestaurantTable[]=[]; error=''; form={tableId:'',customerName:'',phone:'',email:'',guests:1,reservationAt:'',note:''}; readonly states:ReservationStatus[]=['CONFIRMED','CANCELLED','COMPLETED']; constructor(private service:ReservationsService,private tablesService:TablesService){} ngOnInit(){this.load();this.tablesService.available().subscribe(x=>this.tables=x||[]);} load(){this.service.upcoming().subscribe({next:x=>this.reservations=x||[],error:()=>this.error='No se pudieron cargar las reservas.'});} create(){this.service.create({...this.form,email:this.form.email||undefined,note:this.form.note||undefined}).subscribe({next:()=>{this.form={tableId:'',customerName:'',phone:'',email:'',guests:1,reservationAt:'',note:''};this.load();},error:e=>this.error=e.error?.message||'No se pudo crear la reserva.'});} status(reservation:Reservation,status:ReservationStatus){this.service.status(reservation.id,status).subscribe({next:()=>this.load(),error:e=>this.error=e.error?.message||'No se pudo actualizar.'});} }
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import {
+  Reservation,
+  ReservationStatus,
+} from '../../core/models/reservation.model';
+import { RestaurantTable, tableLabel } from '../../core/models/table.model';
+import { ReservationsService } from './reservations.service';
+
+interface StatusAction {
+  status: ReservationStatus;
+  label: string;
+}
+
+@Component({
+  selector: 'app-reservations',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './reservations.component.html',
+  styleUrl: './reservations.component.scss',
+})
+export class ReservationsComponent implements OnInit {
+  reservations: Reservation[] = [];
+  tables: RestaurantTable[] = [];
+  loading = false;
+  checkingAvailability = false;
+  saving = false;
+  updatingId: string | null = null;
+  availabilityChecked = false;
+  error = '';
+  success = '';
+  form = this.emptyForm();
+
+  constructor(private readonly service: ReservationsService) {}
+
+  ngOnInit(): void {
+    this.load();
+  }
+
+  load(): void {
+    this.loading = true;
+    this.error = '';
+    this.service.upcoming().subscribe({
+      next: (reservations) => {
+        this.reservations = reservations || [];
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.error = 'No se pudieron cargar las reservas.';
+      },
+    });
+  }
+
+  scheduleChanged(): void {
+    this.form.tableId = '';
+    this.tables = [];
+    this.availabilityChecked = false;
+    this.success = '';
+  }
+
+  checkAvailability(): void {
+    const reservationAt = this.reservationDate();
+    if (!reservationAt || reservationAt.getTime() <= Date.now()) {
+      this.error = 'Selecciona una fecha y hora futuras.';
+      return;
+    }
+    if (this.form.guests < 1) {
+      this.error = 'La reserva debe tener al menos un comensal.';
+      return;
+    }
+
+    this.checkingAvailability = true;
+    this.availabilityChecked = false;
+    this.error = '';
+    this.success = '';
+    this.service
+      .availability({
+        reservationAt: reservationAt.toISOString(),
+        guests: this.form.guests,
+      })
+      .subscribe({
+        next: (tables) => {
+          this.tables = tables || [];
+          this.form.tableId = '';
+          this.checkingAvailability = false;
+          this.availabilityChecked = true;
+        },
+        error: (response) => {
+          this.tables = [];
+          this.checkingAvailability = false;
+          this.error = response.error?.message || 'No se pudo consultar la disponibilidad.';
+        },
+      });
+  }
+
+  create(): void {
+    const reservationAt = this.reservationDate();
+    if (!this.form.customerName.trim() || !this.form.phone.trim()) {
+      this.error = 'Completa el nombre y teléfono del cliente.';
+      return;
+    }
+    if (!reservationAt || reservationAt.getTime() <= Date.now()) {
+      this.error = 'Selecciona una fecha y hora futuras.';
+      return;
+    }
+    if (!this.availabilityChecked || !this.form.tableId) {
+      this.error = 'Consulta la disponibilidad y selecciona una mesa.';
+      return;
+    }
+
+    this.saving = true;
+    this.error = '';
+    this.success = '';
+    this.service
+      .create({
+        tableId: this.form.tableId,
+        customerName: this.form.customerName.trim(),
+        phone: this.form.phone.trim(),
+        email: this.form.email.trim() || undefined,
+        guests: this.form.guests,
+        reservationAt: reservationAt.toISOString(),
+        note: this.form.note.trim() || undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.saving = false;
+          this.success = 'Reserva creada correctamente.';
+          this.form = this.emptyForm();
+          this.tables = [];
+          this.availabilityChecked = false;
+          this.load();
+        },
+        error: (response) => {
+          this.saving = false;
+          this.error = response.error?.message || 'No se pudo crear la reserva.';
+        },
+      });
+  }
+
+  actions(reservation: Reservation): StatusAction[] {
+    if (reservation.status === 'PENDING') {
+      return [
+        { status: 'CONFIRMED', label: 'Confirmar' },
+        { status: 'CANCELLED', label: 'Cancelar' },
+      ];
+    }
+    if (reservation.status === 'CONFIRMED') {
+      return [
+        { status: 'COMPLETED', label: 'Marcar llegada' },
+        { status: 'CANCELLED', label: 'Cancelar' },
+      ];
+    }
+    return [];
+  }
+
+  updateStatus(reservation: Reservation, action: StatusAction): void {
+    if (
+      action.status === 'CANCELLED' &&
+      !window.confirm(`¿Cancelar la reserva de ${reservation.customerName}?`)
+    ) {
+      return;
+    }
+    this.updatingId = reservation.id;
+    this.error = '';
+    this.success = '';
+    this.service.status(reservation.id, action.status).subscribe({
+      next: () => {
+        this.updatingId = null;
+        this.success = 'Estado de la reserva actualizado.';
+        this.load();
+      },
+      error: (response) => {
+        this.updatingId = null;
+        this.error = response.error?.message || 'No se pudo actualizar la reserva.';
+      },
+    });
+  }
+
+  statusLabel(status: ReservationStatus): string {
+    return {
+      PENDING: 'Pendiente',
+      CONFIRMED: 'Confirmada',
+      CANCELLED: 'Cancelada',
+      COMPLETED: 'Cliente recibido',
+    }[status];
+  }
+
+  tableName(table?: RestaurantTable): string {
+    return tableLabel(table);
+  }
+
+  private reservationDate(): Date | null {
+    if (!this.form.reservationAt) return null;
+    const value = new Date(this.form.reservationAt);
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+
+  private emptyForm() {
+    return {
+      tableId: '',
+      customerName: '',
+      phone: '',
+      email: '',
+      guests: 1,
+      reservationAt: '',
+      note: '',
+    };
+  }
+}

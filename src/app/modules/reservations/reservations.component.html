@@ -1,1 +1,82 @@
-<section class="reservations"><header><p>Anfitrión / agenda</p><h1>Reservas</h1></header><p class="error" *ngIf="error">{{error}}</p><div class="layout"><form (ngSubmit)="create()"><h2>Nueva reserva</h2><select required [(ngModel)]="form.tableId" name="table"><option value="">Mesa libre</option><option *ngFor="let table of tables" [value]="table.id">Mesa {{table.number || table.name || table.id}}</option></select><input required [(ngModel)]="form.customerName" name="customerName" placeholder="Nombre del cliente"><input required [(ngModel)]="form.phone" name="phone" placeholder="Teléfono"><input type="email" [(ngModel)]="form.email" name="email" placeholder="Email (opcional)"><input required type="number" min="1" [(ngModel)]="form.guests" name="guests" placeholder="Comensales"><input required type="datetime-local" [(ngModel)]="form.reservationAt" name="reservationAt"><input [(ngModel)]="form.note" name="note" placeholder="Nota"><button>Guardar reserva</button></form><div class="list"><h2>Próximas</h2><article *ngFor="let reservation of reservations"><strong>{{reservation.customerName}}</strong><span>Mesa {{reservation.table?.number || reservation.tableId}} · {{reservation.guests}} personas</span><small>{{reservation.reservationAt | date:'medium'}}</small><div *ngIf="reservation.status === 'PENDING'"><button *ngFor="let state of states" (click)="status(reservation,state)">{{state}}</button></div></article><p *ngIf="!reservations.length">No hay reservas próximas.</p></div></div></section>
+<section class="reservations">
+  <header>
+    <p>Anfitrión / agenda</p>
+    <h1>Reservas</h1>
+  </header>
+
+  <p class="error" role="alert" *ngIf="error">{{ error }}</p>
+  <p class="success" role="status" *ngIf="success">{{ success }}</p>
+
+  <div class="layout">
+    <form (ngSubmit)="create()">
+      <h2>Nueva reserva</h2>
+
+      <label for="reservation-name">Cliente</label>
+      <input id="reservation-name" required [(ngModel)]="form.customerName" name="customerName" placeholder="Nombre completo">
+
+      <label for="reservation-phone">Teléfono</label>
+      <input id="reservation-phone" required [(ngModel)]="form.phone" name="phone" placeholder="Número de contacto">
+
+      <label for="reservation-email">Email <small>opcional</small></label>
+      <input id="reservation-email" type="email" [(ngModel)]="form.email" name="email" placeholder="cliente@email.com">
+
+      <div class="schedule-fields">
+        <div>
+          <label for="reservation-guests">Comensales</label>
+          <input id="reservation-guests" required type="number" min="1" [(ngModel)]="form.guests" (ngModelChange)="scheduleChanged()" name="guests">
+        </div>
+        <div>
+          <label for="reservation-date">Fecha y hora</label>
+          <input id="reservation-date" required type="datetime-local" [(ngModel)]="form.reservationAt" (ngModelChange)="scheduleChanged()" name="reservationAt">
+        </div>
+      </div>
+
+      <button class="secondary" type="button" (click)="checkAvailability()" [disabled]="checkingAvailability || saving">
+        {{ checkingAvailability ? 'Consultando…' : 'Buscar mesas disponibles' }}
+      </button>
+
+      <label for="reservation-table">Mesa</label>
+      <select id="reservation-table" required [(ngModel)]="form.tableId" name="table" [disabled]="!availabilityChecked || !tables.length">
+        <option value="">Selecciona una mesa</option>
+        <option *ngFor="let table of tables" [value]="table.id">{{ tableName(table) }}</option>
+      </select>
+      <p class="availability" *ngIf="availabilityChecked">
+        {{ tables.length ? tables.length + ' mesa(s) disponible(s).' : 'No hay mesas disponibles para ese horario y cantidad.' }}
+      </p>
+
+      <label for="reservation-note">Nota <small>opcional</small></label>
+      <input id="reservation-note" [(ngModel)]="form.note" name="note" placeholder="Cumpleaños, accesibilidad, preferencias…">
+
+      <button type="submit" [disabled]="saving || !availabilityChecked || !form.tableId">
+        {{ saving ? 'Guardando…' : 'Guardar reserva' }}
+      </button>
+    </form>
+
+    <div class="list">
+      <h2>Próximas reservas</h2>
+      <p class="empty" *ngIf="loading">Cargando agenda…</p>
+      <p class="empty" *ngIf="!loading && !reservations.length">No hay reservas próximas.</p>
+
+      <article *ngFor="let reservation of reservations">
+        <div class="reservation-heading">
+          <strong>{{ reservation.customerName }}</strong>
+          <span class="status" [attr.data-status]="reservation.status">{{ statusLabel(reservation.status) }}</span>
+        </div>
+        <span>{{ tableName(reservation.table) }} · {{ reservation.guests }} personas</span>
+        <small>{{ reservation.reservationAt | date:'medium' }} · {{ reservation.phone }}</small>
+        <p *ngIf="reservation.note">{{ reservation.note }}</p>
+        <div class="actions" *ngIf="actions(reservation) as availableActions">
+          <button
+            *ngFor="let action of availableActions"
+            type="button"
+            [class.danger]="action.status === 'CANCELLED'"
+            [disabled]="updatingId === reservation.id"
+            (click)="updateStatus(reservation, action)"
+          >
+            {{ updatingId === reservation.id ? 'Actualizando…' : action.label }}
+          </button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
