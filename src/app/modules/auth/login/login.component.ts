@@ -30,14 +30,12 @@ export class LoginComponent {
 
     if (!email || !password) return;
     this.authService.login({ email, password }).subscribe({
-      next: (resp) => {
-        console.log('Respuesta del Login => ', resp);
+      next: () => {
         this.loginError = null;
         this.router.navigateByUrl(redirectTo);
       },
-      error: (err) => {
-        console.error('Login fallido', err)
-        this.loginError = 'Correo o Contraseña inconrrectos';
+      error: () => {
+        this.loginError = 'Correo o contraseña incorrectos';
       },
     })
   }

@@ -11,21 +11,34 @@
   a { color: inherit; text-decoration: none; }
   .brand { align-items:center; display:flex; font-size: 1.1rem; font-weight: 800; letter-spacing: -.04em; margin-right: auto; text-transform: uppercase; }
   .brand::before { background:#e62129; content:''; height:14px; margin-right:.55rem; width:14px; }
-  nav { display: flex; gap: 1.5rem; }
+  nav { display:flex; gap:1.5rem; }
   nav a { font-size: .78rem; font-weight: 700; letter-spacing: .08em; padding: 27px 0 24px; text-transform: uppercase; }
   nav a.active { border-bottom: 4px solid #e62129; }
   button { background: #e62129; border: 0; border-radius: 0; color: inherit; cursor: pointer; font-size: .75rem; font-weight: 700; letter-spacing: .06em; padding: .65rem .85rem; text-transform: uppercase; }
   button:hover { background:#fff; color:#111; }
 }
 
-.app-content { margin: 0 auto; max-width: 1240px; min-height:calc(100vh - 76px); padding: 3.5rem 3vw; }
+.app-content { margin:0 auto; max-width:1240px; min-height:calc(100vh - 76px); padding:3.5rem 3vw; width:100%; }
+
+@media (max-width: 1100px) {
+  .app-header { flex-wrap:wrap; gap:0 1rem; padding-top:.75rem; }
+  .app-header nav {
+    border-top:1px solid #343434;
+    flex-basis:100%;
+    gap:1.25rem;
+    order:3;
+    overflow-x:auto;
+    overscroll-behavior-x:contain;
+    scrollbar-width:thin;
+  }
+  .app-header nav a { flex:0 0 auto; padding:18px 0 15px; }
+}
 
 @media (max-width: 640px) {
-  .app-header { gap: 1rem; min-height: 60px; padding: 0 1rem; }
+  .app-header { min-height:60px; padding:.75rem 1rem 0; }
   .app-header .brand { font-size: .9rem; }
-  .app-header nav { gap: .75rem; }
-  .app-header nav a { padding: 21px 0 18px; }
-  .app-header button { font-size: 0; padding: .75rem; }
-  .app-header button::after { content: '×'; font-size: 1.25rem; }
+  .app-header nav { gap:1rem; }
+  .app-header nav a { font-size:.7rem; padding:15px 0 12px; }
+  .app-header button { font-size:.68rem; padding:.65rem .75rem; }
   .app-content { padding: 2rem 1rem; }
 }

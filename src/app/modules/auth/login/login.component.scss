@@ -1,6 +1,6 @@
 .login-container {
-  background: #fff;
-  border-top: 12px solid #e62129;
+  background:var(--paper);
+  border-top:12px solid var(--signal);
   margin: 8vh auto;
   max-width: 480px;
   padding: 3.5rem;
@@ -11,14 +11,16 @@
     line-height: .88;
     margin: .3rem 0 1.4rem;
   }
-  .eyebrow { color: #e62129; font-size: .72rem; font-weight: 800; letter-spacing: .14em; margin: 0; text-transform: uppercase; }
-  .intro { color: #5d5d5d; line-height: 1.5; margin-bottom: 2.5rem; }
+  .eyebrow { color:var(--signal); font-size:.72rem; font-weight:800; letter-spacing:.14em; margin:0; text-transform:uppercase; }
+  .intro { color:var(--muted); line-height:1.5; margin-bottom:2.5rem; }
 
   .global-error {
-    color: #e74c3c;
+    border-left:4px solid var(--signal);
+    color:var(--danger);
     background: #fff1f1;
     margin-bottom: 1rem;
     font-weight: 500;
+    padding:.75rem;
   }
 
   .form-group {
@@ -36,19 +38,20 @@
 
     input {
       padding: 0.5rem;
-      border: 1px solid #111;
+      background:var(--paper);
+      border:1px solid var(--ink);
       border-radius: 0;
       font-size: 1rem;
 
       &:focus {
         outline: none;
-        border-color: #e62129;
-        box-shadow: 4px 4px 0 #e62129;
+        border-color:var(--signal);
+        box-shadow:4px 4px 0 var(--signal);
       }
     }
 
     .error {
-      color: #e74c3c;
+      color:var(--danger);
       font-size: 0.875rem;
       margin-top: 0.25rem;
     }
@@ -58,7 +61,7 @@
     width: 100%;
     padding: 0.75rem;
     align-items: center;
-    background-color: #111;
+    background-color:var(--ink);
     border: none;
     border-radius: 0;
     display: flex;
@@ -76,9 +79,12 @@
     }
 
     &:hover:not(:disabled) {
-      background-color: #e62129;
+      background-color:var(--signal);
     }
   }
 }
 
-@media (max-width: 540px) { .login-container { margin: 2rem auto; padding: 2.25rem 1.5rem; } }
+@media (max-width: 540px) {
+  .login-container { margin:2rem auto; padding:2.25rem 1.5rem; }
+  .login-container h2 { font-size:clamp(2.35rem, 12vw, 3.25rem); }
+}
