@@ -52,4 +52,12 @@ describe('StaffService', () => {
     expect(request.request.method).toBe('PUT');
     expect(request.request.body).toEqual(payload);
   });
+
+  it('changes staff access without resending profile data', () => {
+    service.setActive('user-1', false).subscribe();
+
+    const request = http.expectOne(`${environment.apiUrl}/users/user-1`);
+    expect(request.request.method).toBe('PUT');
+    expect(request.request.body).toEqual({ isActive: false });
+  });
 });

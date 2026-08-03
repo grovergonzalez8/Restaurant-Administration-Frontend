@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 import { StaffComponent } from './staff.component';
 import { StaffService } from './staff.service';
 
@@ -16,6 +17,7 @@ describe('StaffComponent', () => {
     name: 'Ana Pérez',
     email: 'ana@example.com',
     phone: '70000000',
+    isActive: true,
     role: roles[2],
   };
   let service: jasmine.SpyObj<StaffService>;
@@ -26,16 +28,30 @@ describe('StaffComponent', () => {
       'roles',
       'create',
       'update',
+      'setActive',
     ]);
     service.users.and.returnValue(of([user]));
     service.roles.and.returnValue(of(roles));
     service.create.and.returnValue(of(user));
     service.update.and.returnValue(of(user));
+    service.setActive.and.returnValue(of({ ...user, isActive: false }));
 
     await TestBed.configureTestingModule({
       imports: [StaffComponent],
-      providers: [{ provide: StaffService, useValue: service }],
+      providers: [
+        { provide: StaffService, useValue: service },
+        { provide: AuthService, useValue: { user: () => ({ id: 'admin-1' }) } },
+      ],
     }).compileComponents();
+  });
+
+  it('deactivates another staff account after confirmation', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    const component = TestBed.createComponent(StaffComponent).componentInstance;
+
+    component.toggleActive(user);
+
+    expect(service.setActive).toHaveBeenCalledOnceWith('user-1', false);
   });
 
   it('loads staff and hides the customer role from assignment', () => {

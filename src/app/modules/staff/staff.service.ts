@@ -18,6 +18,7 @@ export interface UpdateStaffPayload {
   phone?: string;
   roleId: number;
   password?: string;
+  isActive?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -41,5 +42,9 @@ export class StaffService {
 
   update(id: string, payload: UpdateStaffPayload) {
     return this.http.put<User>(`${this.usersUrl}/${id}`, payload);
+  }
+
+  setActive(id: string, isActive: boolean) {
+    return this.http.put<User>(`${this.usersUrl}/${id}`, { isActive });
   }
 }

@@ -20,6 +20,10 @@
   td strong, td small { display:block; }
   td small { color:var(--muted); margin-top:.2rem; }
   .role { border-left:4px solid var(--signal); display:inline-block; font-size:.68rem; font-weight:800; letter-spacing:.06em; padding:.3rem .45rem; text-transform:uppercase; }
+  tr.inactive { opacity:.62; }
+  .access-status { border-left:4px solid var(--success); display:inline-block; font-size:.68rem; font-weight:800; padding:.3rem .45rem; text-transform:uppercase; }
+  .access-status.disabled { border-left-color:var(--danger); }
+  .row-actions { display:flex; flex-wrap:wrap; gap:.4rem; }
   .empty { color:var(--muted); padding:var(--space-3) 0; }
   .staff-form { border-top-color:var(--signal); display:flex; flex-direction:column; gap:.65rem; }
   .staff-form h2 { margin-bottom:1rem; }

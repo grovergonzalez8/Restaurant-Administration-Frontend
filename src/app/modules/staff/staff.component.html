@@ -13,18 +13,19 @@
     <section class="staff-list" aria-labelledby="staff-list-title">
       <header>
         <div><span>Equipo activo</span><h2 id="staff-list-title">Usuarios registrados</h2></div>
-        <strong>{{ users.length }}</strong>
+        <strong>{{ activeUsers }}/{{ users.length }}</strong>
       </header>
       <p class="empty" *ngIf="!users.length">Todavía no hay personal registrado.</p>
       <div class="table-wrap" *ngIf="users.length">
         <table>
-          <thead><tr><th>Nombre</th><th>Rol</th><th>Contacto</th><th>Acción</th></tr></thead>
+          <thead><tr><th>Nombre</th><th>Rol</th><th>Estado</th><th>Contacto</th><th>Acción</th></tr></thead>
           <tbody>
-            <tr *ngFor="let user of users">
+            <tr *ngFor="let user of users" [class.inactive]="user.isActive === false">
               <td><strong>{{ user.name }}</strong><small>{{ user.email }}</small></td>
               <td><span class="role">{{ roleLabel(user.role.name) }}</span></td>
+              <td><span class="access-status" [class.disabled]="user.isActive === false">{{ user.isActive === false ? 'Sin acceso' : 'Activo' }}</span></td>
               <td>{{ user.phone || '—' }}</td>
-              <td><button class="secondary" type="button" (click)="edit(user)">Editar</button></td>
+              <td class="row-actions"><button class="secondary" type="button" (click)="edit(user)">Editar</button><button class="secondary" type="button" (click)="toggleActive(user)" [disabled]="saving || isCurrentUser(user)">{{ isCurrentUser(user) ? 'Tu cuenta' : user.isActive === false ? 'Reactivar' : 'Desactivar' }}</button></td>
             </tr>
           </tbody>
         </table>

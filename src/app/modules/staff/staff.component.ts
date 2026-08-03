@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { Role } from '../../core/models/role.model';
 import { User } from '../../core/models/user.model';
 import { CreateStaffPayload, StaffService, UpdateStaffPayload } from './staff.service';
+import { AuthService } from '../auth/auth.service';
 
 const operationalRoles = new Set(['admin', 'kitchen', 'waiter', 'host']);
 
@@ -25,7 +26,14 @@ export class StaffComponent implements OnInit {
   success = '';
   form = this.emptyForm();
 
-  constructor(private readonly staff: StaffService) {}
+  constructor(
+    private readonly staff: StaffService,
+    private readonly auth: AuthService,
+  ) {}
+
+  get activeUsers(): number {
+    return this.users.filter((user) => user.isActive !== false).length;
+  }
 
   ngOnInit(): void {
     this.load();
@@ -64,6 +72,34 @@ export class StaffComponent implements OnInit {
     this.editingId = null;
     this.form = this.emptyForm();
     this.error = '';
+  }
+
+  isCurrentUser(user: User): boolean {
+    return this.auth.user()?.id === user.id;
+  }
+
+  toggleActive(user: User): void {
+    if (this.isCurrentUser(user)) {
+      this.error = 'No puedes desactivar tu propia cuenta.';
+      return;
+    }
+    const nextState = user.isActive === false;
+    const action = nextState ? 'reactivar' : 'desactivar';
+    if (!window.confirm(`¿Confirmar que deseas ${action} a ${user.name}?`)) return;
+    this.saving = true;
+    this.error = '';
+    this.success = '';
+    this.staff.setActive(user.id, nextState).subscribe({
+      next: () => {
+        this.saving = false;
+        this.success = nextState ? 'Cuenta reactivada correctamente.' : 'Cuenta desactivada correctamente.';
+        this.load();
+      },
+      error: (response) => {
+        this.saving = false;
+        this.error = this.errorMessage(response, 'No se pudo actualizar el acceso.');
+      },
+    });
   }
 
   save(): void {
