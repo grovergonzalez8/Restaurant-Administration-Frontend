@@ -3,6 +3,7 @@ import { Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { User } from '../../core/models/user.model';
+import { RealtimeService } from '../../core/services/realtime.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,10 @@ export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
   public user = signal<User | null>(this.readStoredUser());
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private realtime: RealtimeService,
+  ) {}
 
   login(credentials: { email: string; password: string }) {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
@@ -22,6 +26,7 @@ export class AuthService {
 
         if (token) {
           localStorage.setItem('token', token);
+          this.realtime.reconnect();
         }
 
         if (user) {
@@ -33,6 +38,7 @@ export class AuthService {
   }
   
   logout() {
+    this.realtime.disconnect();
     this.user.set(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
