@@ -15,28 +15,49 @@
     <button *ngFor="let status of statuses" [class.danger]="status === 'CANCELLED'" (click)="updateStatus(status)">{{ status === 'IN_PROGRESS' ? 'Marcar en preparación' : 'Cancelar orden' }}</button>
   </div>
   <section class="payment-actions" *ngIf="canCollectPayment() && checkout?.state !== 'CANCELLED'">
-    <span>Pago</span>
-    <h2>{{ checkout?.state === 'PAID' ? 'Pago registrado' : 'Cobrar orden' }}</h2>
-    <p aria-live="polite" *ngIf="loadingCheckout">Consultando disponibilidad…</p>
-    <div class="checkout-error" role="alert" *ngIf="checkoutError">
-      <p>{{ checkoutError }}</p>
-      <button type="button" (click)="retryCheckout()">Reintentar</button>
-    </div>
-    <ng-container *ngIf="!loadingCheckout && checkout as state">
-      <p class="checkout-message" [attr.data-state]="state.state">{{ state.message }}</p>
-      <a class="cash-cta" routerLink="/cash" *ngIf="state.state === 'OPEN_CASH_SESSION'">Abrir caja</a>
-      <div class="payment-ready" *ngIf="state.canPay">
-        <strong>{{ state.total | currency:'USD' }}</strong>
-        <div class="payment-methods" aria-label="Métodos de pago disponibles">
-          <button
-            type="button"
-            *ngFor="let method of state.methods"
-            (click)="pay(method)"
-            [disabled]="paying"
-          >{{ paymentMethodLabel(method) }}</button>
-        </div>
+    <div class="payment-flow">
+      <span>Pago</span>
+      <h2>{{ checkout?.state === 'PAID' ? 'Pago registrado' : 'Cobrar orden' }}</h2>
+      <p aria-live="polite" *ngIf="loadingCheckout">Consultando disponibilidad…</p>
+      <div class="checkout-error" role="alert" *ngIf="checkoutError">
+        <p>{{ checkoutError }}</p>
+        <button type="button" (click)="retryCheckout()">Reintentar</button>
       </div>
-    </ng-container>
+      <ng-container *ngIf="!loadingCheckout && checkout as state">
+        <p class="checkout-message" [attr.data-state]="state.state">{{ state.message }}</p>
+        <a class="cash-cta" routerLink="/cash" *ngIf="state.state === 'OPEN_CASH_SESSION'">Abrir caja</a>
+        <div class="payment-ready" *ngIf="state.canPay">
+          <strong>{{ state.total | currency:'USD' }}</strong>
+          <div class="payment-methods" aria-label="Métodos de pago disponibles">
+            <button
+              type="button"
+              *ngFor="let method of state.methods"
+              (click)="pay(method)"
+              [disabled]="paying"
+            >{{ paymentMethodLabel(method) }}</button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <aside class="charge-summary" aria-labelledby="charge-summary-title">
+      <header>
+        <div>
+          <span>Orden correspondiente</span>
+          <h3 id="charge-summary-title">Resumen de cobro</h3>
+        </div>
+        <strong>{{ tableLabel(order.table) }}</strong>
+      </header>
+      <ul>
+        <li *ngFor="let item of order.items">
+          <div><strong>{{ item.name || item.menuItem?.name }}</strong><small>{{ item.quantity }} × {{ item.unitPrice | currency:'USD' }}</small></div>
+          <b>{{ item.subtotal | currency:'USD' }}</b>
+        </li>
+      </ul>
+      <footer>
+        <span>Total a cobrar</span>
+        <strong>{{ (checkout?.total ?? order.total) | currency:'USD' }}</strong>
+      </footer>
+    </aside>
   </section>
   <p class="error" role="alert" *ngIf="error">{{ error }}</p>
 

@@ -12,9 +12,10 @@ describe('OrderDetailComponent', () => {
   const order = {
     id: 'order-1',
     tableId: 'table-1',
+    table: { id: 'table-1', number: 4 },
     status: 'IN_PROGRESS',
     total: 20,
-    items: [],
+    items: [{ name: 'Hamburguesa', quantity: 2, unitPrice: 10, subtotal: 20 }],
   };
   const waitingCheckout: PaymentCheckout = {
     orderId: 'order-1',
@@ -119,6 +120,9 @@ describe('OrderDetailComponent', () => {
     expect(payments.checkout).toHaveBeenCalledOnceWith('order-1');
     expect(fixture.componentInstance.checkout).toEqual(waitingCheckout);
     expect(fixture.nativeElement.querySelector('.payment-methods')).toBeNull();
+    const summary = fixture.nativeElement.querySelector('.charge-summary').textContent;
+    expect(summary).toContain('Hamburguesa');
+    expect(summary).toContain('20.00');
   });
 
   it('shows payment methods only when checkout allows payment', () => {
