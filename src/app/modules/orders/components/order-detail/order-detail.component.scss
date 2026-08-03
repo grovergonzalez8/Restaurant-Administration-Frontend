@@ -35,7 +35,9 @@
   .cash-cta { background:var(--signal); color:#fff; display:inline-block; font-weight:800; padding:.7rem .9rem; text-decoration:none; }
   .cash-cta:hover { background:var(--ink); }
   .payment-ready { align-items:end; display:flex; flex-wrap:wrap; gap:var(--space-2); justify-content:space-between; }
-  .payment-ready > strong { font-size:2rem; letter-spacing:-.05em; }
+  .payment-total span { color:var(--muted); display:block; font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .payment-total strong { display:block; font-size:2rem; letter-spacing:-.05em; margin:.25rem 0; }
+  .payment-total small { display:block; max-width:28rem; }
   .payment-methods { display:flex; flex-wrap:wrap; gap:.5rem; }
   .charge-summary { border-left:1px solid var(--ink); padding-left:var(--space-3); }
   .charge-summary header { align-items:start; border-bottom:3px solid var(--ink); display:flex; gap:var(--space-2); justify-content:space-between; padding-bottom:.75rem; }

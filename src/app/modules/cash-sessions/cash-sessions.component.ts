@@ -103,6 +103,11 @@ export class CashSessionsComponent implements OnInit {
     });
   }
 
+  openWithZero(): void {
+    this.openingBalance = 0;
+    this.open();
+  }
+
   itemName(item: OrderItem): string {
     return item.name || (item as OrderItem & { menuItem?: { name?: string } }).menuItem?.name || 'Producto';
   }

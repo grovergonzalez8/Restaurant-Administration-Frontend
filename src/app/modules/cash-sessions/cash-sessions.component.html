@@ -51,19 +51,26 @@
     <ng-template #openCash>
       <div class="opening-layout">
         <form class="panel opening" (ngSubmit)="open()">
-          <span class="eyebrow">{{ checkoutOrder ? 'Paso 1 de 2 / preparar cobro' : 'Inicio de turno' }}</span>
-          <h2>{{ checkoutOrder ? 'Abre tu caja para continuar' : 'Abrir caja' }}</h2>
-          <p id="opening-help">La caja debe registrar cuánto dinero físico contiene antes de recibir el primer pago.</p>
+          <span class="eyebrow">{{ checkoutOrder ? 'Paso 1 de 2 / cobrar orden' : 'Inicio de turno' }}</span>
+          <h2>{{ checkoutOrder ? 'Cobrar orden' : 'Abrir caja' }}</h2>
+          <p id="opening-help">
+            {{ checkoutOrder ? 'Antes de cobrar, necesitamos iniciar la caja del turno.' : 'La caja debe registrar cuánto dinero físico contiene antes de recibir el primer pago.' }}
+          </p>
           <div class="opening-explanation">
-            <strong>¿Qué debes ingresar?</strong>
-            <p>El efectivo que ya está disponible en el cajón. No es el total de la orden. Si la caja empieza vacía, ingresa 0.</p>
+            <strong>{{ checkoutOrder ? 'El total de la orden no se escribe aquí' : '¿Qué debes ingresar?' }}</strong>
+            <p *ngIf="checkoutOrder">Después de continuar, solo elegirás el método de pago y el sistema cobrará automáticamente {{ checkoutOrder.total | currency:'USD' }}.</p>
+            <p *ngIf="!checkoutOrder">Ingresa el efectivo que ya está disponible en el cajón. Si la caja empieza vacía, usa 0.</p>
           </div>
+          <button class="empty-cash" type="button" *ngIf="checkoutOrder" (click)="openWithZero()" [disabled]="saving">
+            {{ saving ? 'Preparando cobro…' : 'La caja está vacía — continuar con $0' }}
+          </button>
+          <div class="opening-divider" *ngIf="checkoutOrder"><span>o registra efectivo previo</span></div>
           <label for="openingBalance">Efectivo disponible actualmente en caja</label>
           <input id="openingBalance" name="openingBalance" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" required aria-describedby="opening-help opening-example" [(ngModel)]="openingBalance">
           <small id="opening-example">Ejemplo: fondo para dar cambio antes de comenzar el turno.</small>
           <div class="opening-actions">
             <button type="submit" [disabled]="saving">
-              {{ saving ? 'Abriendo…' : checkoutOrder ? 'Abrir caja y volver a la orden' : 'Abrir caja' }}
+              {{ saving ? 'Preparando…' : checkoutOrder ? 'Guardar efectivo y continuar al cobro' : 'Abrir caja' }}
             </button>
             <a [routerLink]="orderReturnUrl" *ngIf="checkoutOrder">Cancelar y volver</a>
           </div>
@@ -84,7 +91,7 @@
             </li>
           </ul>
           <footer><span>Total de la orden</span><strong>{{ order.total | currency:'USD' }}</strong></footer>
-          <p>Este total se cobrará después de abrir la caja; no debes ingresarlo como efectivo inicial.</p>
+          <p>Este es el monto que se cobrará al volver. Solo tendrás que elegir efectivo, tarjeta o QR.</p>
         </aside>
       </div>
 

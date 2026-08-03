@@ -133,9 +133,9 @@ describe('OrderDetailComponent', () => {
 
     const methods = fixture.nativeElement.querySelectorAll('.payment-methods button');
     expect(Array.from(methods).map((button: any) => button.textContent.trim())).toEqual([
-      'Efectivo',
-      'Tarjeta',
-      'QR',
+      'Cobrar en efectivo',
+      'Cobrar con tarjeta',
+      'Cobrar por QR',
     ]);
   });
 

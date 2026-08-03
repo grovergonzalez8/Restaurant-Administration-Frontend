@@ -61,7 +61,8 @@ export class OrderDetailComponent implements OnInit {
   pay(method: PaymentMethod): void {
     if (!this.checkout?.canPay || !this.checkout.methods.includes(method)) return;
     const methodLabel = this.paymentMethodLabel(method);
-    if (!window.confirm(`¿Confirmar pago de ${this.checkout.total} mediante ${methodLabel}?`)) return;
+    const total = Number(this.checkout.total).toFixed(2);
+    if (!window.confirm(`¿Confirmar el cobro de $${total} mediante ${methodLabel}?`)) return;
 
     this.paying = true;
     this.error = '';
@@ -109,6 +110,14 @@ export class OrderDetailComponent implements OnInit {
 
   paymentMethodLabel(method: PaymentMethod): string {
     return method === 'CASH' ? 'Efectivo' : method === 'CARD' ? 'Tarjeta' : 'QR';
+  }
+
+  paymentActionLabel(method: PaymentMethod): string {
+    return method === 'CASH'
+      ? 'Cobrar en efectivo'
+      : method === 'CARD'
+        ? 'Cobrar con tarjeta'
+        : 'Cobrar por QR';
   }
 
   private loadCheckout(): void {

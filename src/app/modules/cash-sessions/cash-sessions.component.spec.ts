@@ -114,7 +114,7 @@ describe('CashSessionsComponent', () => {
 
     const content = fixture.nativeElement.textContent;
     expect(orders.get).toHaveBeenCalledOnceWith('order-1');
-    expect(content).toContain('No es el total de la orden');
+    expect(content).toContain('El total de la orden no se escribe aquí');
     expect(content).toContain('Hamburguesa');
     expect(content).toContain('20.00');
   });
@@ -123,9 +123,7 @@ describe('CashSessionsComponent', () => {
     contextOrderId = 'order-1';
     const fixture = TestBed.createComponent(CashSessionsComponent);
     fixture.detectChanges();
-    fixture.componentInstance.openingBalance = 0;
-
-    fixture.componentInstance.open();
+    fixture.componentInstance.openWithZero();
 
     expect(service.open).toHaveBeenCalledWith(0);
     expect(router.navigateByUrl).toHaveBeenCalledOnceWith('/orders/order-1');

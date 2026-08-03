@@ -30,16 +30,20 @@
           routerLink="/cash"
           [queryParams]="{ orderId: order.id }"
           *ngIf="state.state === 'OPEN_CASH_SESSION'"
-        >Abrir caja</a>
+        >Cobrar orden</a>
         <div class="payment-ready" *ngIf="state.canPay">
-          <strong>{{ state.total | currency:'USD' }}</strong>
+          <div class="payment-total">
+            <span>Total a cobrar</span>
+            <strong>{{ state.total | currency:'USD' }}</strong>
+            <small>No necesitas ingresar otro monto: el sistema usará el total exacto de la orden.</small>
+          </div>
           <div class="payment-methods" aria-label="Métodos de pago disponibles">
             <button
               type="button"
               *ngFor="let method of state.methods"
               (click)="pay(method)"
               [disabled]="paying"
-            >{{ paymentMethodLabel(method) }}</button>
+            >{{ paymentActionLabel(method) }}</button>
           </div>
         </div>
       </ng-container>

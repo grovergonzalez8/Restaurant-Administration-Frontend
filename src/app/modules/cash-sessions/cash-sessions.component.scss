@@ -21,6 +21,10 @@
   .opening p { color:var(--muted); margin:0 0 .5rem; }
   .opening-explanation { background:#f2f2f0; border-left:5px solid var(--signal); padding:1rem; }
   .opening-explanation p { color:var(--ink); margin:.4rem 0 0; }
+  .empty-cash { background:var(--signal); margin-top:.25rem; text-align:left; }
+  .empty-cash:hover:not(:disabled) { background:var(--ink); }
+  .opening-divider { align-items:center; color:var(--muted); display:flex; font-size:.68rem; font-weight:800; gap:.75rem; letter-spacing:.08em; text-transform:uppercase; }
+  .opening-divider::before, .opening-divider::after { background:var(--line); content:''; flex:1; height:1px; }
   .opening-actions { align-items:center; display:flex; flex-wrap:wrap; gap:1rem; margin-top:.5rem; }
   .opening-actions a { color:var(--ink); font-weight:800; }
   .checkout-order { border-top-color:var(--signal); }
