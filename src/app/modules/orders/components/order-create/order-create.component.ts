@@ -7,7 +7,7 @@ import { MenuItem } from '../../../../core/models/menu-item.model';
 import { OrderStatus } from '../../../../core/enums/order-status.enum';
 import { OrdersService } from '../../orders.service';
 import { TablesService } from '../../tables.service';
-import { RestaurantTable } from '../../../../core/models/table.model';
+import { RestaurantTable, tableLabel } from '../../../../core/models/table.model';
 
 @Component({
   selector: 'app-order-create', standalone: true,
@@ -21,6 +21,7 @@ export class OrderCreateComponent implements OnInit {
   tableId = '';
   error = '';
   saving = false;
+  readonly tableLabel = tableLabel;
 
   constructor(private menuService: MenuService, private tablesService: TablesService, private ordersService: OrdersService, private router: Router) {}
 

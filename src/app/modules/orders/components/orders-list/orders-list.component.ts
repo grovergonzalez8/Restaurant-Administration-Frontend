@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router';
 import { OrdersService } from '../../orders.service';
 import { AuthService } from '../../../auth/auth.service';
 import { RealtimeService } from '../../../../core/services/realtime.service';
+import { Order } from '../../../../core/models/order.model';
+import { tableLabel } from '../../../../core/models/table.model';
 
 @Component({
   selector: 'app-orders-list',
@@ -13,7 +15,8 @@ import { RealtimeService } from '../../../../core/services/realtime.service';
   styleUrls: ['./orders-list.component.scss'],
 })
 export class OrdersListComponent implements OnInit {
-  orders: any[] = [];
+  orders: Order[] = [];
+  readonly tableLabel = tableLabel;
 
   constructor(private ordersService: OrdersService, private auth: AuthService, realtime: RealtimeService) {
     ['order.created', 'order.updated', 'order.deleted'].forEach((event) => realtime.on(event, () => this.load()));

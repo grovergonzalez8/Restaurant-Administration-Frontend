@@ -1,7 +1,7 @@
 <section class="order-create">
   <div class="page-heading"><p>Nueva comanda</p><h1>Crear orden</h1></div>
   <label>Mesa
-    <select [(ngModel)]="tableId"><option value="">Selecciona una mesa libre</option><option *ngFor="let table of tables" [value]="table.id">{{ table.name || ('Mesa ' + (table.number || table.id)) }}</option></select>
+    <select [(ngModel)]="tableId"><option value="">Selecciona una mesa libre</option><option *ngFor="let table of tables" [value]="table.id">{{ tableLabel(table) }}</option></select>
   </label>
   <p class="error" *ngIf="error">{{ error }}</p>
   <div class="items">

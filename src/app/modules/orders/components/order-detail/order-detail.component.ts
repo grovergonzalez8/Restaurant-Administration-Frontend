@@ -7,6 +7,7 @@ import { PaymentMethod, PaymentReceipt } from '../../../../core/models/payment.m
 import { AuthService } from '../../../auth/auth.service';
 import { CashSession } from '../../../../core/models/cash-session.model';
 import { CashSessionsService } from '../../../cash-sessions/cash-sessions.service';
+import { tableLabel } from '../../../../core/models/table.model';
 
 @Component({
   selector: 'app-order-detail',
@@ -25,6 +26,7 @@ export class OrderDetailComponent implements OnInit {
   receipt: PaymentReceipt | null = null;
   loadingReceipt = false;
   receiptError = '';
+  readonly tableLabel = tableLabel;
 
   constructor(
     private route: ActivatedRoute,
