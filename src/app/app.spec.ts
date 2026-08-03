@@ -37,6 +37,13 @@ describe('App', () => {
     expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 
+  it('shows staff management only to administrators', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('nav').textContent).toContain('Personal');
+  });
+
   it('shows only the host workspace links', () => {
     role = 'host';
     const fixture = TestBed.createComponent(App);

@@ -1,0 +1,62 @@
+<section class="staff-page">
+  <header class="swiss-heading">
+    <p>Administración / equipo</p>
+    <h1>Personal</h1>
+    <button type="button" (click)="load()" [disabled]="loading">Actualizar ↻</button>
+  </header>
+
+  <p class="state" aria-live="polite" *ngIf="loading">Cargando personal…</p>
+  <p class="error" role="alert" *ngIf="error">{{ error }}</p>
+  <p class="success" role="status" *ngIf="success">{{ success }}</p>
+
+  <div class="staff-grid" *ngIf="!loading">
+    <section class="staff-list" aria-labelledby="staff-list-title">
+      <header>
+        <div><span>Equipo activo</span><h2 id="staff-list-title">Usuarios registrados</h2></div>
+        <strong>{{ users.length }}</strong>
+      </header>
+      <p class="empty" *ngIf="!users.length">Todavía no hay personal registrado.</p>
+      <div class="table-wrap" *ngIf="users.length">
+        <table>
+          <thead><tr><th>Nombre</th><th>Rol</th><th>Contacto</th><th>Acción</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td><strong>{{ user.name }}</strong><small>{{ user.email }}</small></td>
+              <td><span class="role">{{ roleLabel(user.role.name) }}</span></td>
+              <td>{{ user.phone || '—' }}</td>
+              <td><button class="secondary" type="button" (click)="edit(user)">Editar</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <form class="staff-form" #staffForm="ngForm" (ngSubmit)="save()">
+      <span>{{ editingId ? 'Edición' : 'Alta' }}</span>
+      <h2>{{ editingId ? 'Editar personal' : 'Añadir personal' }}</h2>
+
+      <label for="staff-name">Nombre completo</label>
+      <input id="staff-name" name="name" [(ngModel)]="form.name" required autocomplete="name">
+
+      <label for="staff-email">Correo</label>
+      <input id="staff-email" name="email" type="email" [(ngModel)]="form.email" required autocomplete="email">
+
+      <label for="staff-phone">Teléfono <small>Opcional</small></label>
+      <input id="staff-phone" name="phone" type="tel" [(ngModel)]="form.phone" autocomplete="tel">
+
+      <label for="staff-role">Área y permisos</label>
+      <select id="staff-role" name="roleId" [(ngModel)]="form.roleId" required>
+        <option [ngValue]="null" disabled>Selecciona un rol</option>
+        <option *ngFor="let role of roles" [ngValue]="role.id">{{ roleLabel(role.name) }}</option>
+      </select>
+
+      <label for="staff-password">Contraseña <small>{{ editingId ? 'Déjala vacía para conservarla' : 'Mínimo 6 caracteres' }}</small></label>
+      <input id="staff-password" name="password" type="password" [(ngModel)]="form.password" [required]="!editingId" minlength="6" autocomplete="new-password">
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="saving || staffForm.invalid">{{ saving ? 'Guardando…' : editingId ? 'Guardar cambios' : 'Crear personal' }}</button>
+        <button class="secondary" type="button" *ngIf="editingId" (click)="cancelEdit()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</section>
