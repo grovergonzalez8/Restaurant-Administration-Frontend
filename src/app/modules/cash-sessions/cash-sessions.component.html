@@ -1,12 +1,12 @@
 <section class="cash-sessions">
-  <header class="page-heading">
+  <header class="page-heading swiss-heading">
     <p>Operación / turno</p>
     <h1>Caja</h1>
     <button type="button" (click)="load()" [disabled]="loading">Actualizar ↻</button>
   </header>
 
-  <p class="state" *ngIf="loading">Consultando caja…</p>
-  <p class="error" *ngIf="error">{{ error }}</p>
+  <p class="state" aria-live="polite" *ngIf="loading">Consultando caja…</p>
+  <p class="error" role="alert" *ngIf="error">{{ error }}</p>
 
   <ng-container *ngIf="!loading">
     <div class="layout" *ngIf="currentSession as session; else openCash">
@@ -33,9 +33,9 @@
         <span class="eyebrow">Arqueo</span>
         <h2>Cerrar caja</h2>
         <label for="closingBalance">Efectivo contado</label>
-        <input id="closingBalance" name="closingBalance" type="number" min="0" step="0.01" required [(ngModel)]="closingBalance">
-        <small *ngIf="summary">Esperado en efectivo: {{ summary.expectedCash | currency:'USD' }}</small>
-        <button type="submit" [disabled]="saving">{{ saving ? 'Cerrando…' : 'Cerrar turno' }}</button>
+        <input id="closingBalance" name="closingBalance" type="number" min="0" step="0.01" required aria-describedby="closing-help" [(ngModel)]="closingBalance">
+        <small id="closing-help" *ngIf="summary">Esperado en efectivo: {{ summary.expectedCash | currency:'USD' }}</small>
+        <button class="danger" type="submit" [disabled]="saving">{{ saving ? 'Cerrando…' : 'Cerrar turno' }}</button>
       </form>
     </div>
 
@@ -43,13 +43,13 @@
       <form class="panel opening" (ngSubmit)="open()">
         <span class="eyebrow">Inicio de turno</span>
         <h2>Abrir caja</h2>
-        <p>Registra el efectivo disponible antes de recibir pagos.</p>
+        <p id="opening-help">Registra el efectivo disponible antes de recibir pagos.</p>
         <label for="openingBalance">Saldo inicial</label>
-        <input id="openingBalance" name="openingBalance" type="number" min="0" step="0.01" required [(ngModel)]="openingBalance">
+        <input id="openingBalance" name="openingBalance" type="number" min="0" step="0.01" required aria-describedby="opening-help" [(ngModel)]="openingBalance">
         <button type="submit" [disabled]="saving">{{ saving ? 'Abriendo…' : 'Abrir caja' }}</button>
       </form>
 
-      <article class="closed-result" *ngIf="lastClosed as closed">
+      <article class="closed-result" aria-live="polite" *ngIf="lastClosed as closed">
         <strong>Caja cerrada correctamente.</strong>
         <span>Esperado: {{ closed.expectedBalance | currency:'USD' }}</span>
         <span>Contado: {{ closed.closingBalance | currency:'USD' }}</span>

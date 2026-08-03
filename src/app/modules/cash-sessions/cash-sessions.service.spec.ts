@@ -38,9 +38,13 @@ describe('CashSessionsService', () => {
 
   it('requests the current session and its summary', () => {
     service.current().subscribe();
-    http.expectOne(`${environment.apiUrl}/cash-sessions/current`).flush(null);
+    const current = http.expectOne(`${environment.apiUrl}/cash-sessions/current`);
+    expect(current.request.method).toBe('GET');
+    current.flush(null);
 
     service.summary('cash-1').subscribe();
-    http.expectOne(`${environment.apiUrl}/cash-sessions/cash-1/summary`).flush({});
+    const summary = http.expectOne(`${environment.apiUrl}/cash-sessions/cash-1/summary`);
+    expect(summary.request.method).toBe('GET');
+    summary.flush({});
   });
 });

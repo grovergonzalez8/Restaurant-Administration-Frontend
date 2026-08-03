@@ -1,11 +1,28 @@
 <section class="order-create">
-  <div class="page-heading"><p>Nueva comanda</p><h1>Crear orden</h1></div>
-  <label>Mesa
-    <select [(ngModel)]="tableId"><option value="">Selecciona una mesa libre</option><option *ngFor="let table of tables" [value]="table.id">{{ tableLabel(table) }}</option></select>
-  </label>
-  <p class="error" *ngIf="error">{{ error }}</p>
-  <div class="items">
-    <label *ngFor="let item of menu"><span>{{ item.name }}<small>{{ item.price | currency:'USD' }}</small></span><input type="number" min="0" [ngModel]="quantity(item)" (ngModelChange)="setQuantity(item, $event)"></label>
+  <header class="page-heading swiss-heading"><p>Nueva comanda</p><h1>Crear orden</h1></header>
+  <p class="error" role="alert" *ngIf="error">{{ error }}</p>
+
+  <div class="setup">
+    <label for="order-table">Mesa</label>
+    <select id="order-table" *ngIf="tables.length; else unavailableTables" [(ngModel)]="tableId">
+      <option value="">Selecciona una mesa libre</option>
+      <option *ngFor="let table of tables" [value]="table.id">{{ tableLabel(table) }}</option>
+    </select>
+    <ng-template #unavailableTables><select id="order-table" disabled><option>{{ tablesLoading ? 'Cargando mesas…' : 'No hay mesas disponibles' }}</option></select></ng-template>
+    <small>Solo se muestran mesas disponibles para una nueva orden.</small>
   </div>
-  <footer><strong>Total {{ total | currency:'USD' }}</strong><button (click)="save()" [disabled]="saving">{{ saving ? 'Creando…' : 'Enviar a cocina →' }}</button></footer>
+
+  <section class="products" aria-labelledby="products-heading">
+    <header><div><span>Selección</span><h2 id="products-heading">Productos</h2></div><strong>{{ selected.length }} seleccionados</strong></header>
+    <p class="state" aria-live="polite" *ngIf="menuLoading">Cargando menú disponible…</p>
+    <p class="empty" *ngIf="!menuLoading && !menu.length">No hay productos disponibles.</p>
+    <div class="items" *ngIf="!menuLoading && menu.length">
+      <label *ngFor="let item of menu">
+        <span><strong>{{ item.name }}</strong><small>{{ item.price | currency:'USD' }}</small></span>
+        <input type="number" min="0" step="1" inputmode="numeric" [attr.aria-label]="'Cantidad de ' + item.name" [ngModel]="quantity(item)" (ngModelChange)="setQuantity(item, $event)">
+      </label>
+    </div>
+  </section>
+
+  <footer><strong>Total <span>{{ total | currency:'USD' }}</span></strong><button type="button" (click)="save()" [disabled]="saving || menuLoading || tablesLoading">{{ saving ? 'Creando…' : 'Enviar a cocina →' }}</button></footer>
 </section>

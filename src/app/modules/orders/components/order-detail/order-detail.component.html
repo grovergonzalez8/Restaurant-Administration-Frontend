@@ -1,30 +1,39 @@
-<div class="order-detail" *ngIf="order">
-  <h2>Orden {{ order.id }}</h2>
-  <p>{{ tableLabel(order.table) }}</p>
-  <p>Estado: {{ order.status }}</p>
-  <p>Total: {{ order.total | number:'1.2-2' }}</p>
+<article class="order-detail" *ngIf="order">
+  <header class="detail-heading">
+    <p>Servicio / detalle</p>
+    <h1>Orden <span>#{{ order.id | slice:0:8 }}</span></h1>
+    <small>Referencia {{ order.id }}</small>
+  </header>
+
+  <dl class="order-summary">
+    <div><dt>Mesa</dt><dd>{{ tableLabel(order.table) }}</dd></div>
+    <div><dt>Estado</dt><dd><span class="status" [attr.data-status]="order.status">{{ statusLabel(order.status) }}</span></dd></div>
+    <div><dt>Total</dt><dd>{{ order.total | currency:'USD' }}</dd></div>
+  </dl>
+
   <div class="status-actions" *ngIf="canUpdateStatus() && order.status !== 'COMPLETED' && order.status !== 'CANCELLED'">
-    <button *ngFor="let status of statuses" (click)="updateStatus(status)">{{ status === 'IN_PROGRESS' ? 'En preparación' : 'Cancelar' }}</button>
+    <button *ngFor="let status of statuses" [class.danger]="status === 'CANCELLED'" (click)="updateStatus(status)">{{ status === 'IN_PROGRESS' ? 'Marcar en preparación' : 'Cancelar orden' }}</button>
   </div>
   <div class="payment-actions" *ngIf="canCollectPayment() && order.status !== 'CANCELLED' && order.status !== 'COMPLETED'">
-    <span>Cobrar orden</span>
-    <p *ngIf="checkingCash">Verificando caja…</p>
-    <p class="cash-warning" *ngIf="!checkingCash && !cashSession">Debes <a routerLink="/cash">abrir una caja</a> antes de cobrar.</p>
+    <span>Pago</span>
+    <h2>Cobrar orden</h2>
+    <p aria-live="polite" *ngIf="checkingCash">Verificando caja…</p>
+    <p class="cash-warning" role="alert" *ngIf="!checkingCash && !cashSession">Debes <a routerLink="/cash">abrir una caja</a> antes de cobrar.</p>
     <ng-container *ngIf="cashSession">
       <button (click)="pay('CASH')" [disabled]="paying">Efectivo</button>
       <button (click)="pay('CARD')" [disabled]="paying">Tarjeta</button>
       <button (click)="pay('QR')" [disabled]="paying">QR</button>
     </ng-container>
   </div>
-  <p class="error" *ngIf="error">{{ error }}</p>
+  <p class="error" role="alert" *ngIf="error">{{ error }}</p>
 
-  <h3>Items</h3>
-  <ul>
-    <li *ngFor="let it of order.items">{{ it.name || it.menuItem?.name }} — x{{ it.quantity }} — {{ it.subtotal | number:'1.2-2' }}</li>
+  <h2 class="section-title">Productos</h2>
+  <ul class="order-items">
+    <li *ngFor="let it of order.items"><strong>{{ it.name || it.menuItem?.name }}</strong><span>{{ it.quantity }} ×</span><b>{{ it.subtotal | currency:'USD' }}</b></li>
   </ul>
 
-  <section class="receipt-state" *ngIf="loadingReceipt">Generando comprobante…</section>
-  <section class="receipt-error" *ngIf="receiptError">
+  <section class="receipt-state" aria-live="polite" *ngIf="loadingReceipt">Generando comprobante…</section>
+  <section class="receipt-error" role="alert" *ngIf="receiptError">
     {{ receiptError }} <button type="button" (click)="retryReceipt()">Reintentar</button>
   </section>
 
@@ -52,4 +61,4 @@
       <tfoot><tr><th colspan="3">Total pagado</th><td>{{ document.amount | currency:'USD' }}</td></tr></tfoot>
     </table>
   </section>
-</div>
+</article>

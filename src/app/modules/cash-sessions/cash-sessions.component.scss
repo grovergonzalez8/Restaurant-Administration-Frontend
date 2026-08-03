@@ -1,11 +1,10 @@
 .cash-sessions {
-  .page-heading { align-items:end; border-bottom:1px solid var(--line); display:grid; grid-template-columns:1fr auto; margin-bottom:2rem; padding-bottom:1.25rem; }
-  .page-heading p { color:var(--signal); font-size:.72rem; font-weight:800; grid-column:1; letter-spacing:.12em; margin:0; text-transform:uppercase; }
-  .page-heading h1 { font-size:clamp(3.5rem, 9vw, 7rem); grid-column:1; letter-spacing:-.08em; line-height:.8; margin:.35rem 0 0; }
-  .page-heading button { grid-column:2; grid-row:1 / 3; }
   button { background:var(--ink); border:0; color:#fff; cursor:pointer; font-weight:800; padding:.8rem 1rem; }
+  button:hover:not(:disabled) { background:var(--signal); }
+  button.danger { background:var(--signal); }
+  button.danger:hover:not(:disabled) { background:var(--ink); }
   .layout { display:grid; gap:1rem; grid-template-columns:repeat(2, minmax(0, 1fr)); }
-  .panel { background:#fff; border-top:6px solid var(--ink); padding:2rem; }
+  .panel { background:var(--paper); border-top:6px solid var(--ink); padding:2rem; }
   .current { border-top-color:var(--signal); }
   .eyebrow { color:var(--muted); font-size:.68rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
   h2 { letter-spacing:-.04em; margin:.35rem 0 1.25rem; }
@@ -15,18 +14,18 @@
   dd { font-size:1.15rem; font-weight:800; margin:0; }
   .close { display:flex; flex-direction:column; gap:.7rem; grid-column:1 / -1; }
   label { font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
-  input { border:1px solid var(--line); font-size:1.4rem; padding:.8rem; }
+  input { background:var(--paper); border:1px solid var(--ink); border-radius:0; font-size:1.4rem; max-width:420px; padding:.8rem; width:100%; }
   small { color:var(--muted); }
   .opening { display:flex; flex-direction:column; gap:.75rem; max-width:520px; }
   .opening p { color:var(--muted); margin:0 0 .5rem; }
-  .closed-result { background:#fff; border-left:6px solid var(--signal); display:flex; gap:1rem; margin-top:1rem; padding:1rem; }
-  .closed-result .negative { color:#b00020; }
+  .closed-result { background:var(--paper); border-left:6px solid var(--success); display:flex; gap:1rem; margin-top:1rem; padding:1rem; }
+  .closed-result .negative { color:var(--danger); }
   .history { margin-top:3rem; }
   .history > h2 { border-bottom:3px solid var(--ink); padding-bottom:.75rem; }
-  table { background:#fff; width:100%; }
+  table { background:var(--paper); min-width:760px; width:100%; }
   th, td { border-bottom:1px solid var(--line); padding:.85rem; text-align:left; }
   th { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; }
-  .error { background:#fff0f0; border-left:4px solid var(--signal); color:#8d001b; padding:1rem; }
+  .error { background:#fff0f0; border-left:4px solid var(--signal); color:var(--danger); padding:1rem; }
   .state { color:var(--muted); }
 }
 

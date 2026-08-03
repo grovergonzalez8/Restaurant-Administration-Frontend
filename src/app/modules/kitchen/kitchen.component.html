@@ -1,19 +1,19 @@
 <section class="kitchen">
-  <header class="page-heading">
+  <header class="page-heading swiss-heading">
     <p>Producción / tiempo real</p>
     <h1>Cocina</h1>
     <button type="button" (click)="load()" [disabled]="loading">Actualizar ↻</button>
   </header>
 
-  <p class="state" *ngIf="loading">Actualizando comandas…</p>
-  <div class="error" *ngIf="error">{{ error }} <button type="button" (click)="load()">Reintentar</button></div>
-  <p class="success" *ngIf="success">{{ success }}</p>
+  <p class="state" aria-live="polite" *ngIf="loading">Actualizando comandas…</p>
+  <div class="error" role="alert" *ngIf="error">{{ error }} <button type="button" (click)="load()">Reintentar</button></div>
+  <p class="success" aria-live="polite" *ngIf="success">{{ success }}</p>
 
   <p class="empty" *ngIf="!loading && !tickets.length">No hay órdenes pendientes en cocina.</p>
 
   <div class="board" *ngIf="!loading && tickets.length">
     <section class="lane">
-      <header><span>Pendientes</span><strong>{{ pending.length }}</strong></header>
+      <header><span>Pendientes</span><strong aria-label="Órdenes pendientes">{{ pending.length }}</strong></header>
       <article class="ticket pending" *ngFor="let ticket of pending">
         <div class="ticket-heading">
           <strong>{{ tableLabel(ticket) }}</strong>
@@ -34,7 +34,7 @@
     </section>
 
     <section class="lane">
-      <header><span>En preparación</span><strong>{{ inProgress.length }}</strong></header>
+      <header><span>En preparación</span><strong aria-label="Órdenes en preparación">{{ inProgress.length }}</strong></header>
       <article class="ticket working" *ngFor="let ticket of inProgress">
         <div class="ticket-heading">
           <strong>{{ tableLabel(ticket) }}</strong>

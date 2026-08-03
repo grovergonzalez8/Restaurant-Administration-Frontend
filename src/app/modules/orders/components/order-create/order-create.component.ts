@@ -22,12 +22,20 @@ export class OrderCreateComponent implements OnInit {
   error = '';
   saving = false;
   readonly tableLabel = tableLabel;
+  menuLoading = true;
+  tablesLoading = true;
 
   constructor(private menuService: MenuService, private tablesService: TablesService, private ordersService: OrdersService, private router: Router) {}
 
   ngOnInit(): void {
-    this.menuService.available().subscribe({ next: (items) => this.menu = items || [], error: () => this.error = 'No se pudo cargar el menú disponible.' });
-    this.tablesService.available().subscribe({ next: (tables) => this.tables = tables || [], error: () => this.error = 'No se pudieron cargar las mesas libres.' });
+    this.menuService.available().subscribe({
+      next: (items) => { this.menu = items ?? []; this.menuLoading = false; },
+      error: () => { this.menuLoading = false; this.error = 'No se pudo cargar el menú disponible.'; },
+    });
+    this.tablesService.available().subscribe({
+      next: (tables) => { this.tables = tables ?? []; this.tablesLoading = false; },
+      error: () => { this.tablesLoading = false; this.error = 'No se pudieron cargar las mesas libres.'; },
+    });
   }
   quantity(item: MenuItem): number { return this.quantities[item.id!] || 0; }
   setQuantity(item: MenuItem, value: number): void { this.quantities[item.id!] = Math.max(0, Number(value) || 0); }

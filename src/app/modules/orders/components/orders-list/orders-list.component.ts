@@ -17,6 +17,8 @@ import { tableLabel } from '../../../../core/models/table.model';
 export class OrdersListComponent implements OnInit {
   orders: Order[] = [];
   readonly tableLabel = tableLabel;
+  loading = true;
+  error = '';
 
   constructor(private ordersService: OrdersService, private auth: AuthService, realtime: RealtimeService) {
     ['order.created', 'order.updated', 'order.deleted'].forEach((event) => realtime.on(event, () => this.load()));
@@ -26,9 +28,30 @@ export class OrdersListComponent implements OnInit {
     this.load();
   }
 
-  load() {
+  load(): void {
+    this.loading = true;
+    this.error = '';
     const role = this.auth.user()?.role?.name?.toLowerCase();
     const source = role === 'admin' || role === 'kitchen' || role === 'cocina' ? this.ordersService.list() : this.ordersService.my();
-    source.subscribe((res) => (this.orders = res || []));
+    source.subscribe({
+      next: (orders) => {
+        this.orders = orders ?? [];
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.error = 'No se pudieron cargar las órdenes.';
+      },
+    });
+  }
+
+  statusLabel(status: Order['status']): string {
+    const labels: Record<Order['status'], string> = {
+      PENDING: 'Pendiente',
+      IN_PROGRESS: 'En preparación',
+      COMPLETED: 'Completada',
+      CANCELLED: 'Cancelada',
+    };
+    return labels[status];
   }
 }

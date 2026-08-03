@@ -83,6 +83,16 @@ export class OrderDetailComponent implements OnInit {
     return role === 'admin' || role === 'waiter' || role === 'mesero';
   }
 
+  statusLabel(status: OrderStatus): string {
+    const labels: Record<OrderStatus, string> = {
+      [OrderStatus.PENDING]: 'Pendiente',
+      [OrderStatus.IN_PROGRESS]: 'En preparación',
+      [OrderStatus.COMPLETED]: 'Completada',
+      [OrderStatus.CANCELLED]: 'Cancelada',
+    };
+    return labels[status];
+  }
+
   retryReceipt(): void {
     if (this.order?.id) this.loadReceipt(this.order.id);
   }
