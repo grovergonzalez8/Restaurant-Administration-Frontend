@@ -5,6 +5,7 @@
     <a *ngIf="canManageKitchen()" routerLink="/kitchen" routerLinkActive="active">Cocina</a>
     <a *ngIf="canViewKitchenResources()" routerLink="/inventory" routerLinkActive="active">Inventario</a>
     <a *ngIf="canViewKitchenResources()" routerLink="/recipes" routerLinkActive="active">Recetas</a>
+    <a *ngIf="canViewDiningRoom()" routerLink="/dining-room" routerLinkActive="active">Salón</a>
     <a *ngIf="canViewReservations()" routerLink="/reservations" routerLinkActive="active">Reservas</a>
     <a *ngIf="isAdmin()" routerLink="/reports" routerLinkActive="active">Reportes</a>
     <a *ngIf="isAdmin()" routerLink="/staff" routerLinkActive="active">Personal</a>

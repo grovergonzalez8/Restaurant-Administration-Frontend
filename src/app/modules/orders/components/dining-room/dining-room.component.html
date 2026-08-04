@@ -1,0 +1,40 @@
+<section class="dining-room">
+  <header class="page-heading swiss-heading">
+    <p>Servicio / Tiempo real</p>
+    <h1>Salón</h1>
+  </header>
+
+  <div class="summary" aria-label="Resumen del salón">
+    <span><strong>{{ freeCount }}</strong> libres</span>
+    <span><strong>{{ occupiedCount }}</strong> ocupadas</span>
+    <span><strong>{{ tables.length }}</strong> totales</span>
+  </div>
+
+  <p class="state" aria-live="polite" *ngIf="loading">Actualizando mesas…</p>
+  <div class="error" role="alert" *ngIf="error">
+    {{ error }} <button type="button" (click)="load()">Reintentar</button>
+  </div>
+  <p class="empty" *ngIf="!loading && !error && !tables.length">No hay mesas configuradas.</p>
+
+  <div class="tables" *ngIf="!loading && tables.length">
+    <article *ngFor="let table of tables" [attr.data-status]="table.activeOrder?.status || table.status">
+      <header>
+        <div><small>Mesa</small><strong>{{ table.number }}</strong></div>
+        <span>{{ tableStatus(table) }}</span>
+      </header>
+      <p>{{ table.capacity }} lugares</p>
+
+      <div class="order" *ngIf="table.activeOrder as order">
+        <strong>Orden #{{ order.id | slice:0:8 }}</strong>
+        <span>{{ order.total | currency:'USD' }}</span>
+        <small>{{ order.waiter?.name || 'Sin mesero asignado' }}</small>
+      </div>
+
+      <footer>
+        <a *ngIf="canCreateOrder(table)" routerLink="/orders/new" [queryParams]="{ tableId: table.id }">Crear orden →</a>
+        <a *ngIf="canOpenOrder(table)" [routerLink]="['/orders', table.activeOrder?.id]">Ver orden →</a>
+        <span *ngIf="!canCreateOrder(table) && !canOpenOrder(table)">Sin acciones disponibles</span>
+      </footer>
+    </article>
+  </div>
+</section>

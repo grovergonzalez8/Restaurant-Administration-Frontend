@@ -12,12 +12,14 @@ import { CashSessionsComponent } from './modules/cash-sessions/cash-sessions.com
 import { KitchenComponent } from './modules/kitchen/kitchen.component';
 import { roleGuard } from './modules/auth/role.guard';
 import { StaffComponent } from './modules/staff/staff.component';
+import { DiningRoomComponent } from './modules/orders/components/dining-room/dining-room.component';
 
 export const routes: Routes = [
     ...authRoutes,
     { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin', 'kitchen'] } },
     { path: 'inventory', component: InventoryComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin', 'kitchen'] } },
     { path: 'reservations', component: ReservationsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin', 'host', 'waiter'] } },
+    { path: 'dining-room', component: DiningRoomComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin', 'host', 'waiter'] } },
     { path: 'recipes', component: RecipesComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin', 'kitchen'] } },
     { path: 'reports', component: ReportsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin'] } },
     { path: 'staff', component: StaffComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin'] } },

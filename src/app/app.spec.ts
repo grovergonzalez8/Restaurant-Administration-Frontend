@@ -51,6 +51,7 @@ describe('App', () => {
     fixture.detectChanges();
 
     const navigation = fixture.nativeElement.querySelector('nav').textContent;
+    expect(navigation).toContain('Salón');
     expect(navigation).toContain('Reservas');
     expect(navigation).toContain('Menú');
     expect(navigation).not.toContain('Inventario');
@@ -65,6 +66,7 @@ describe('App', () => {
     fixture.detectChanges();
 
     const navigation = fixture.nativeElement.querySelector('nav').textContent;
+    expect(navigation).toContain('Salón');
     expect(navigation).toContain('Reservas');
     expect(navigation).toContain('Órdenes');
   });

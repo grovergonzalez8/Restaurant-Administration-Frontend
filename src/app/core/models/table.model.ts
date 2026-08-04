@@ -2,6 +2,22 @@ export interface RestaurantTable {
   id: string;
   number?: number;
   name?: string;
+  capacity?: number;
+  status?: TableStatus;
+}
+
+export type TableStatus = 'FREE' | 'OCCUPIED' | 'RESERVED' | 'OUT_OF_SERVICE';
+
+export interface TableOverview extends RestaurantTable {
+  capacity: number;
+  status: TableStatus;
+  activeOrder: {
+    id: string;
+    status: 'PENDING' | 'IN_PROGRESS' | 'READY';
+    total: number;
+    createdAt: string;
+    waiter: { id: string; name: string } | null;
+  } | null;
 }
 
 export function tableLabel(table?: RestaurantTable | null): string {

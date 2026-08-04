@@ -40,6 +40,10 @@ export class App {
     return this.hasRole('admin', 'host', 'waiter');
   }
 
+  canViewDiningRoom(): boolean {
+    return this.hasRole('admin', 'host', 'waiter');
+  }
+
   isAdmin(): boolean {
     return this.hasRole('admin');
   }

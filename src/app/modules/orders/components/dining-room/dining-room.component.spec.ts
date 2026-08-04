@@ -1,0 +1,89 @@
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
+import { TableOverview } from '../../../../core/models/table.model';
+import { RealtimeService } from '../../../../core/services/realtime.service';
+import { AuthService } from '../../../auth/auth.service';
+import { TablesService } from '../../tables.service';
+import { DiningRoomComponent } from './dining-room.component';
+
+describe('DiningRoomComponent', () => {
+  const freeTable: TableOverview = {
+    id: 'table-1',
+    number: 1,
+    capacity: 4,
+    status: 'FREE',
+    activeOrder: null,
+  };
+  const occupiedTable: TableOverview = {
+    id: 'table-2',
+    number: 2,
+    capacity: 4,
+    status: 'OCCUPIED',
+    activeOrder: {
+      id: 'order-1',
+      status: 'READY',
+      total: 45.5,
+      createdAt: '2026-08-03T18:00:00.000Z',
+      waiter: { id: 'waiter-1', name: 'Carlos Mesero' },
+    },
+  };
+  let tables: jasmine.SpyObj<TablesService>;
+  let realtimeCallbacks: Record<string, () => void>;
+  let role = 'waiter';
+
+  beforeEach(async () => {
+    role = 'waiter';
+    realtimeCallbacks = {};
+    tables = jasmine.createSpyObj<TablesService>('TablesService', ['overview']);
+    tables.overview.and.returnValue(of([freeTable, occupiedTable]));
+
+    await TestBed.configureTestingModule({
+      imports: [DiningRoomComponent],
+      providers: [
+        provideRouter([]),
+        { provide: TablesService, useValue: tables },
+        {
+          provide: AuthService,
+          useValue: { user: () => ({ id: 'waiter-1', role: { name: role } }) },
+        },
+        {
+          provide: RealtimeService,
+          useValue: {
+            on: (event: string, callback: () => void) =>
+              (realtimeCallbacks[event] = callback),
+          },
+        },
+      ],
+    }).compileComponents();
+  });
+
+  it('shows free and occupied tables with their available actions', () => {
+    const fixture = TestBed.createComponent(DiningRoomComponent);
+
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.freeCount).toBe(1);
+    expect(fixture.componentInstance.occupiedCount).toBe(1);
+    expect(fixture.nativeElement.textContent).toContain('Lista para cobrar');
+    expect(fixture.nativeElement.textContent).toContain('Crear orden');
+    expect(fixture.nativeElement.textContent).toContain('Ver orden');
+  });
+
+  it('refreshes the room when an order changes', () => {
+    const fixture = TestBed.createComponent(DiningRoomComponent);
+    fixture.detectChanges();
+
+    realtimeCallbacks['order.updated']();
+
+    expect(tables.overview).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps hosts in read-only mode', () => {
+    role = 'host';
+    const component = TestBed.createComponent(DiningRoomComponent).componentInstance;
+
+    expect(component.canCreateOrder(freeTable)).toBeFalse();
+    expect(component.canOpenOrder(occupiedTable)).toBeFalse();
+  });
+});
