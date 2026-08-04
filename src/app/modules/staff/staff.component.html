@@ -51,7 +51,7 @@
         <option *ngFor="let role of roles" [ngValue]="role.id">{{ roleLabel(role.name) }}</option>
       </select>
 
-      <label for="staff-password">Contraseña <small>{{ editingId ? 'Déjala vacía para conservarla' : 'Mínimo 6 caracteres' }}</small></label>
+      <label for="staff-password">Contraseña <small>{{ editingId ? 'Una nueva contraseña cerrará sus sesiones activas; déjala vacía para conservarla' : 'Mínimo 6 caracteres' }}</small></label>
       <input id="staff-password" name="password" type="password" [(ngModel)]="form.password" [required]="!editingId" minlength="6" autocomplete="new-password">
 
       <div class="form-actions">

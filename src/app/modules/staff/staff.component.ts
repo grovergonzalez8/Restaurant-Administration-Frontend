@@ -134,10 +134,15 @@ export class StaffComponent implements OnInit {
     request.subscribe({
       next: () => {
         const wasEditing = Boolean(this.editingId);
+        const passwordChanged = wasEditing && Boolean(this.form.password);
         this.saving = false;
         this.editingId = null;
         this.form = this.emptyForm();
-        this.success = wasEditing ? 'Personal actualizado correctamente.' : 'Personal creado correctamente.';
+        this.success = passwordChanged
+          ? 'Contraseña actualizada. Las sesiones anteriores fueron cerradas.'
+          : wasEditing
+            ? 'Personal actualizado correctamente.'
+            : 'Personal creado correctamente.';
         this.load();
       },
       error: (response) => {

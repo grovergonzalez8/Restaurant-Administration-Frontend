@@ -102,4 +102,18 @@ describe('StaffComponent', () => {
       roleId: 3,
     });
   });
+
+  it('explains that a password reset closes previous sessions', () => {
+    const component = TestBed.createComponent(StaffComponent).componentInstance;
+    component.edit(user);
+    component.form.password = 'new-secret';
+
+    component.save();
+
+    expect(service.update).toHaveBeenCalledWith(
+      'user-1',
+      jasmine.objectContaining({ password: 'new-secret' }),
+    );
+    expect(component.success).toContain('sesiones anteriores fueron cerradas');
+  });
 });
