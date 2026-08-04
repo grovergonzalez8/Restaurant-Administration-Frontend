@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TableOverview } from '../../../../core/models/table.model';
 import { RealtimeService } from '../../../../core/services/realtime.service';
@@ -10,23 +11,38 @@ import { TablesService } from '../../tables.service';
 @Component({
   selector: 'app-dining-room',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './dining-room.component.html',
   styleUrl: './dining-room.component.scss',
 })
 export class DiningRoomComponent implements OnInit {
   tables: TableOverview[] = [];
   loading = true;
+  saving = false;
+  editingId: string | null = null;
   error = '';
+  success = '';
+  form = this.emptyForm();
 
   constructor(
     private readonly tablesService: TablesService,
     private readonly auth: AuthService,
     realtime: RealtimeService,
   ) {
-    ['order.created', 'order.updated', 'order.deleted'].forEach((event) =>
+    [
+      'order.created',
+      'order.updated',
+      'order.deleted',
+      'table.created',
+      'table.updated',
+      'table.deleted',
+    ].forEach((event) =>
       realtime.on(event, () => this.load()),
     );
+  }
+
+  get isAdmin(): boolean {
+    return normalizeRole(this.auth.user()?.role?.name) === 'admin';
   }
 
   get freeCount(): number {
@@ -68,6 +84,73 @@ export class DiningRoomComponent implements OnInit {
     return role === 'admin' || (role === 'waiter' && table.activeOrder.waiter?.id === user?.id);
   }
 
+  canEditTable(table: TableOverview): boolean {
+    return this.isAdmin && table.status !== 'OCCUPIED' && !table.activeOrder;
+  }
+
+  edit(table: TableOverview): void {
+    if (!this.canEditTable(table)) return;
+    this.editingId = table.id;
+    this.form = {
+      number: table.number || 1,
+      capacity: table.capacity,
+      status: table.status === 'OUT_OF_SERVICE' ? 'OUT_OF_SERVICE' : 'FREE',
+    };
+    this.error = '';
+    this.success = '';
+  }
+
+  cancelEdit(): void {
+    this.editingId = null;
+    this.form = this.emptyForm();
+  }
+
+  saveTable(): void {
+    if (!this.isAdmin) return;
+    if (!Number.isInteger(this.form.number) || this.form.number < 1) {
+      this.error = 'El número de mesa debe ser un entero positivo.';
+      return;
+    }
+    if (!Number.isInteger(this.form.capacity) || this.form.capacity < 1) {
+      this.error = 'La capacidad debe ser un entero positivo.';
+      return;
+    }
+    this.saving = true;
+    this.error = '';
+    this.success = '';
+    const request = this.editingId
+      ? this.tablesService.update(this.editingId, this.form)
+      : this.tablesService.create(this.form);
+    request.subscribe({
+      next: () => {
+        this.saving = false;
+        this.success = this.editingId ? 'Mesa actualizada.' : 'Mesa creada.';
+        this.cancelEdit();
+        this.load();
+      },
+      error: (response) => {
+        this.saving = false;
+        this.error = response.error?.message || 'No se pudo guardar la mesa.';
+      },
+    });
+  }
+
+  removeTable(table: TableOverview): void {
+    if (!this.canEditTable(table)) return;
+    if (!window.confirm(`¿Eliminar la mesa ${table.number}?`)) return;
+    this.error = '';
+    this.success = '';
+    this.tablesService.remove(table.id).subscribe({
+      next: () => {
+        this.success = 'Mesa eliminada.';
+        this.load();
+      },
+      error: (response) => {
+        this.error = response.error?.message || 'No se pudo eliminar la mesa.';
+      },
+    });
+  }
+
   tableStatus(table: TableOverview): string {
     if (table.activeOrder?.status === 'READY') return 'Lista para cobrar';
     if (table.activeOrder?.status === 'IN_PROGRESS') return 'En preparación';
@@ -78,5 +161,13 @@ export class DiningRoomComponent implements OnInit {
       RESERVED: 'Reservada',
       OUT_OF_SERVICE: 'Fuera de servicio',
     }[table.status];
+  }
+
+  private emptyForm(): {
+    number: number;
+    capacity: number;
+    status: 'FREE' | 'OUT_OF_SERVICE';
+  } {
+    return { number: 1, capacity: 4, status: 'FREE' };
   }
 }

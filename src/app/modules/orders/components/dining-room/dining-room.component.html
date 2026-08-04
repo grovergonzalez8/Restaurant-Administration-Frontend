@@ -14,6 +14,22 @@
   <div class="error" role="alert" *ngIf="error">
     {{ error }} <button type="button" (click)="load()">Reintentar</button>
   </div>
+  <p class="success" role="status" *ngIf="success">{{ success }}</p>
+
+  <form class="table-form" *ngIf="isAdmin" (ngSubmit)="saveTable()">
+    <h2>{{ editingId ? 'Editar mesa' : 'Nueva mesa' }}</h2>
+    <label>Número <input type="number" min="1" step="1" required name="number" [(ngModel)]="form.number"></label>
+    <label>Capacidad <input type="number" min="1" step="1" required name="capacity" [(ngModel)]="form.capacity"></label>
+    <label>Estado
+      <select name="status" [(ngModel)]="form.status">
+        <option value="FREE">Disponible</option>
+        <option value="OUT_OF_SERVICE">Fuera de servicio</option>
+      </select>
+    </label>
+    <button type="submit" [disabled]="saving">{{ saving ? 'Guardando…' : editingId ? 'Actualizar' : 'Crear mesa' }}</button>
+    <button type="button" *ngIf="editingId" (click)="cancelEdit()">Cancelar</button>
+  </form>
+
   <p class="empty" *ngIf="!loading && !error && !tables.length">No hay mesas configuradas.</p>
 
   <div class="tables" *ngIf="!loading && tables.length">
@@ -33,7 +49,9 @@
       <footer>
         <a *ngIf="canCreateOrder(table)" routerLink="/orders/new" [queryParams]="{ tableId: table.id }">Crear orden →</a>
         <a *ngIf="canOpenOrder(table)" [routerLink]="['/orders', table.activeOrder?.id]">Ver orden →</a>
-        <span *ngIf="!canCreateOrder(table) && !canOpenOrder(table)">Sin acciones disponibles</span>
+        <button type="button" *ngIf="canEditTable(table)" (click)="edit(table)">Editar</button>
+        <button class="danger" type="button" *ngIf="canEditTable(table)" (click)="removeTable(table)">Eliminar</button>
+        <span *ngIf="!canCreateOrder(table) && !canOpenOrder(table) && !canEditTable(table)">Sin acciones disponibles</span>
       </footer>
     </article>
   </div>

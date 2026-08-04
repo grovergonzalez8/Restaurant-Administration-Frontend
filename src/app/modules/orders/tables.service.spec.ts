@@ -27,4 +27,25 @@ describe('TablesService', () => {
     const request = http.expectOne(`${environment.apiUrl}/tables/overview`);
     expect(request.request.method).toBe('GET');
   });
+
+  it('creates and updates tables through the admin contract', () => {
+    const payload = { number: 8, capacity: 6, status: 'FREE' as const };
+    service.create(payload).subscribe();
+    service.update('table-1', payload).subscribe();
+
+    const create = http.expectOne(`${environment.apiUrl}/tables`);
+    expect(create.request.method).toBe('POST');
+    expect(create.request.body).toEqual(payload);
+    const update = http.expectOne(`${environment.apiUrl}/tables/table-1`);
+    expect(update.request.method).toBe('PUT');
+    expect(update.request.body).toEqual(payload);
+  });
+
+  it('removes an unused table', () => {
+    service.remove('table-1').subscribe();
+
+    expect(http.expectOne(`${environment.apiUrl}/tables/table-1`).request.method).toBe(
+      'DELETE',
+    );
+  });
 });

@@ -35,8 +35,16 @@ describe('DiningRoomComponent', () => {
   beforeEach(async () => {
     role = 'waiter';
     realtimeCallbacks = {};
-    tables = jasmine.createSpyObj<TablesService>('TablesService', ['overview']);
+    tables = jasmine.createSpyObj<TablesService>('TablesService', [
+      'overview',
+      'create',
+      'update',
+      'remove',
+    ]);
     tables.overview.and.returnValue(of([freeTable, occupiedTable]));
+    tables.create.and.returnValue(of(freeTable));
+    tables.update.and.returnValue(of(freeTable));
+    tables.remove.and.returnValue(of(void 0));
 
     await TestBed.configureTestingModule({
       imports: [DiningRoomComponent],
@@ -85,5 +93,27 @@ describe('DiningRoomComponent', () => {
 
     expect(component.canCreateOrder(freeTable)).toBeFalse();
     expect(component.canOpenOrder(occupiedTable)).toBeFalse();
+  });
+
+  it('lets administrators create a valid table', () => {
+    role = 'admin';
+    const component = TestBed.createComponent(DiningRoomComponent).componentInstance;
+    component.form = { number: 8, capacity: 6, status: 'FREE' };
+
+    component.saveTable();
+
+    expect(tables.create).toHaveBeenCalledOnceWith({
+      number: 8,
+      capacity: 6,
+      status: 'FREE',
+    });
+    expect(component.success).toBe('Mesa creada.');
+  });
+
+  it('does not allow editing an occupied table', () => {
+    role = 'admin';
+    const component = TestBed.createComponent(DiningRoomComponent).componentInstance;
+
+    expect(component.canEditTable(occupiedTable)).toBeFalse();
   });
 });
