@@ -7,8 +7,8 @@
   <p class="error" role="alert" *ngIf="error">{{ error }}</p>
   <p class="success" role="status" *ngIf="success">{{ success }}</p>
 
-  <div class="layout">
-    <form (ngSubmit)="create()">
+  <div class="layout" [class.readonly]="!canManageReservations">
+    <form (ngSubmit)="create()" *ngIf="canManageReservations">
       <h2>Nueva reserva</h2>
 
       <label for="reservation-name">Cliente</label>
@@ -66,6 +66,13 @@
         <small>{{ reservation.reservationAt | date:'medium' }} · {{ reservation.phone }}</small>
         <p *ngIf="reservation.note">{{ reservation.note }}</p>
         <div class="actions" *ngIf="actions(reservation) as availableActions">
+          <button
+            type="button"
+            *ngIf="canTakeOrder && reservation.status === 'CONFIRMED'"
+            (click)="takeOrder(reservation)"
+          >
+            Tomar pedido →
+          </button>
           <button
             *ngFor="let action of availableActions"
             type="button"

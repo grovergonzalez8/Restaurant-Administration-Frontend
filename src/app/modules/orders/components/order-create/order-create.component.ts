@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MenuService } from '../../../menu/menu.service';
 import { MenuItem } from '../../../../core/models/menu-item.model';
 import { OrderStatus } from '../../../../core/enums/order-status.enum';
@@ -19,21 +19,42 @@ export class OrderCreateComponent implements OnInit {
   tables: RestaurantTable[] = [];
   quantities: Record<string, number> = {};
   tableId = '';
+  reservationId: string | null = null;
+  reservationCustomer = '';
   error = '';
   saving = false;
   readonly tableLabel = tableLabel;
   menuLoading = true;
   tablesLoading = true;
 
-  constructor(private menuService: MenuService, private tablesService: TablesService, private ordersService: OrdersService, private router: Router) {}
+  constructor(
+    private menuService: MenuService,
+    private tablesService: TablesService,
+    private ordersService: OrdersService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
+    const requestedTableId = this.route.snapshot.queryParamMap.get('tableId');
+    this.reservationId = this.route.snapshot.queryParamMap.get('reservationId');
+    this.reservationCustomer = this.route.snapshot.queryParamMap.get('customer') || '';
     this.menuService.available().subscribe({
       next: (items) => { this.menu = items ?? []; this.menuLoading = false; },
       error: () => { this.menuLoading = false; this.error = 'No se pudo cargar el menú disponible.'; },
     });
     this.tablesService.available().subscribe({
-      next: (tables) => { this.tables = tables ?? []; this.tablesLoading = false; },
+      next: (tables) => {
+        this.tables = tables ?? [];
+        this.tablesLoading = false;
+        if (requestedTableId) {
+          if (this.tables.some((table) => table.id === requestedTableId)) {
+            this.tableId = requestedTableId;
+          } else {
+            this.error = 'La mesa de la reserva ya no está disponible.';
+          }
+        }
+      },
       error: () => { this.tablesLoading = false; this.error = 'No se pudieron cargar las mesas libres.'; },
     });
   }
@@ -46,7 +67,12 @@ export class OrderCreateComponent implements OnInit {
     if (!this.tableId || !this.selected.length) { this.error = 'Indica una mesa y al menos un producto.'; return; }
     this.saving = true; this.error = '';
     const items = this.selected.map((item) => ({ menuItemId: item.id!, quantity: this.quantity(item) }));
-    this.ordersService.create({ tableId: this.tableId, items, status: OrderStatus.PENDING }).subscribe({
+    this.ordersService.create({
+      tableId: this.tableId,
+      ...(this.reservationId ? { reservationId: this.reservationId } : {}),
+      items,
+      status: OrderStatus.PENDING,
+    }).subscribe({
       next: (order) => this.router.navigate(['/orders', order.id]),
       error: (response) => { this.saving = false; const message = response.error?.message; this.error = Array.isArray(message) ? message.join(' ') : message || 'No se pudo crear la orden. Verifica el estado de la mesa.'; },
     });

@@ -19,6 +19,7 @@
   button { background:var(--signal); border:0; color:#fff; cursor:pointer; font-weight:800; padding:.85rem 1rem; }
   button:hover:not(:disabled) { background:var(--paper); color:var(--ink); }
   .state, .empty, .error { background:var(--paper); padding:var(--space-2); }
+  .reservation-context { border-left:5px solid var(--success); background:var(--paper); padding:var(--space-2); }
   .empty { border-left:5px solid var(--ink); color:var(--muted); }
   .error { border-left:5px solid var(--signal); color:var(--danger); font-weight:700; }
 }

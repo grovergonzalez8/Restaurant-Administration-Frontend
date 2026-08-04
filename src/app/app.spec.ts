@@ -57,4 +57,15 @@ describe('App', () => {
     expect(navigation).not.toContain('Órdenes');
     expect(navigation).not.toContain('Caja');
   });
+
+  it('lets waiters access reservations for the order handoff', () => {
+    role = 'waiter';
+    const fixture = TestBed.createComponent(App);
+
+    fixture.detectChanges();
+
+    const navigation = fixture.nativeElement.querySelector('nav').textContent;
+    expect(navigation).toContain('Reservas');
+    expect(navigation).toContain('Órdenes');
+  });
 });

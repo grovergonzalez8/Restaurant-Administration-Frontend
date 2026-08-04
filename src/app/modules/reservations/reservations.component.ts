@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
   Reservation,
   ReservationStatus,
 } from '../../core/models/reservation.model';
 import { RestaurantTable, tableLabel } from '../../core/models/table.model';
 import { ReservationsService } from './reservations.service';
+import { AuthService } from '../auth/auth.service';
 
 interface StatusAction {
   status: ReservationStatus;
@@ -32,7 +34,19 @@ export class ReservationsComponent implements OnInit {
   success = '';
   form = this.emptyForm();
 
-  constructor(private readonly service: ReservationsService) {}
+  constructor(
+    private readonly service: ReservationsService,
+    private readonly auth: AuthService,
+    private readonly router: Router,
+  ) {}
+
+  get canManageReservations(): boolean {
+    return ['admin', 'host'].includes(this.auth.user()?.role?.name || '');
+  }
+
+  get canTakeOrder(): boolean {
+    return ['admin', 'waiter'].includes(this.auth.user()?.role?.name || '');
+  }
 
   ngOnInit(): void {
     this.load();
@@ -140,6 +154,7 @@ export class ReservationsComponent implements OnInit {
   }
 
   actions(reservation: Reservation): StatusAction[] {
+    if (!this.canManageReservations) return [];
     if (reservation.status === 'PENDING') {
       return [
         { status: 'CONFIRMED', label: 'Confirmar' },
@@ -147,12 +162,20 @@ export class ReservationsComponent implements OnInit {
       ];
     }
     if (reservation.status === 'CONFIRMED') {
-      return [
-        { status: 'COMPLETED', label: 'Marcar llegada' },
-        { status: 'CANCELLED', label: 'Cancelar' },
-      ];
+      return [{ status: 'CANCELLED', label: 'Cancelar' }];
     }
     return [];
+  }
+
+  takeOrder(reservation: Reservation): void {
+    if (!this.canTakeOrder || reservation.status !== 'CONFIRMED') return;
+    void this.router.navigate(['/orders/new'], {
+      queryParams: {
+        tableId: reservation.table?.id || reservation.tableId,
+        reservationId: reservation.id,
+        customer: reservation.customerName,
+      },
+    });
   }
 
   updateStatus(reservation: Reservation, action: StatusAction): void {

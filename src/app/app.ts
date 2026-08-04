@@ -36,8 +36,8 @@ export class App {
     return this.hasRole('admin', 'kitchen');
   }
 
-  canManageReservations(): boolean {
-    return this.hasRole('admin', 'host');
+  canViewReservations(): boolean {
+    return this.hasRole('admin', 'host', 'waiter');
   }
 
   isAdmin(): boolean {

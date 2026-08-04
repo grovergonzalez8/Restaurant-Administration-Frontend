@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { Reservation } from '../../core/models/reservation.model';
 import { ReservationsComponent } from './reservations.component';
 import { ReservationsService } from './reservations.service';
+import { AuthService } from '../auth/auth.service';
 
 describe('ReservationsComponent', () => {
   const pending: Reservation = {
@@ -16,6 +18,8 @@ describe('ReservationsComponent', () => {
     table: { id: 'table-1', number: 4 },
   };
   let service: jasmine.SpyObj<ReservationsService>;
+  let router: jasmine.SpyObj<Router>;
+  let role: 'host' | 'waiter';
 
   beforeEach(async () => {
     service = jasmine.createSpyObj<ReservationsService>('ReservationsService', [
@@ -28,10 +32,16 @@ describe('ReservationsComponent', () => {
     service.availability.and.returnValue(of([{ id: 'table-1', number: 4 }]));
     service.create.and.returnValue(of(pending));
     service.status.and.returnValue(of({ ...pending, status: 'CONFIRMED' }));
+    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+    role = 'host';
 
     await TestBed.configureTestingModule({
       imports: [ReservationsComponent],
-      providers: [{ provide: ReservationsService, useValue: service }],
+      providers: [
+        { provide: ReservationsService, useValue: service },
+        { provide: AuthService, useValue: { user: () => ({ role: { name: role } }) } },
+        { provide: Router, useValue: router },
+      ],
     }).compileComponents();
   });
 
@@ -87,7 +97,23 @@ describe('ReservationsComponent', () => {
       component
         .actions({ ...pending, status: 'CONFIRMED' })
         .map((action) => action.status),
-    ).toEqual(['COMPLETED', 'CANCELLED']);
+    ).toEqual(['CANCELLED']);
+  });
+
+  it('hands a confirmed reservation to the waiter order form', () => {
+    role = 'waiter';
+    const component = TestBed.createComponent(ReservationsComponent).componentInstance;
+    const confirmed = { ...pending, status: 'CONFIRMED' as const };
+
+    component.takeOrder(confirmed);
+
+    expect(router.navigate).toHaveBeenCalledOnceWith(['/orders/new'], {
+      queryParams: {
+        tableId: 'table-1',
+        reservationId: 'reservation-1',
+        customer: 'Ana Pérez',
+      },
+    });
   });
 
   it('requires confirmation before cancelling a reservation', () => {

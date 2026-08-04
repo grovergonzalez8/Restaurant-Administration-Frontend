@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 
 export interface CreateOrderPayload {
   tableId: string;
+  reservationId?: string;
   status?: Order['status'];
   items: Array<{ menuItemId: string; quantity: number }>;
 }

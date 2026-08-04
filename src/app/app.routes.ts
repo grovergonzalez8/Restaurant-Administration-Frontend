@@ -17,7 +17,7 @@ export const routes: Routes = [
     ...authRoutes,
     { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin', 'kitchen'] } },
     { path: 'inventory', component: InventoryComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin', 'kitchen'] } },
-    { path: 'reservations', component: ReservationsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin', 'host'] } },
+    { path: 'reservations', component: ReservationsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin', 'host', 'waiter'] } },
     { path: 'recipes', component: RecipesComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin', 'kitchen'] } },
     { path: 'reports', component: ReportsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin'] } },
     { path: 'staff', component: StaffComponent, canActivate: [authGuard, roleGuard], data: { roles: ['admin'] } },
