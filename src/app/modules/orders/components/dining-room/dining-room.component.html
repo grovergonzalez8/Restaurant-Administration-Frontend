@@ -7,6 +7,7 @@
   <div class="summary" aria-label="Resumen del salón">
     <span><strong>{{ freeCount }}</strong> libres</span>
     <span><strong>{{ occupiedCount }}</strong> ocupadas</span>
+    <span><strong>{{ reservationCount }}</strong> con reserva próxima</span>
     <span><strong>{{ tables.length }}</strong> totales</span>
   </div>
 
@@ -39,6 +40,17 @@
         <span>{{ tableStatus(table) }}</span>
       </header>
       <p>{{ table.capacity }} lugares</p>
+
+      <div class="reservation" *ngIf="table.nextReservation as reservation">
+        <div>
+          <small>Próxima reserva</small>
+          <strong>{{ reservation.reservationAt | date:'short' }}</strong>
+        </div>
+        <span [attr.data-status]="reservation.status">
+          {{ reservation.status === 'CONFIRMED' ? 'Confirmada' : 'Pendiente' }}
+        </span>
+        <p>{{ reservation.customerName }} · {{ reservation.guests }} comensales</p>
+      </div>
 
       <div class="order" *ngIf="table.activeOrder as order">
         <strong>Orden #{{ order.id | slice:0:8 }}</strong>

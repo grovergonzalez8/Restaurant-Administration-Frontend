@@ -36,6 +36,9 @@ export class DiningRoomComponent implements OnInit {
       'table.created',
       'table.updated',
       'table.deleted',
+      'reservation.created',
+      'reservation.updated',
+      'reservation.deleted',
     ].forEach((event) =>
       realtime.on(event, () => this.load()),
     );
@@ -51,6 +54,10 @@ export class DiningRoomComponent implements OnInit {
 
   get occupiedCount(): number {
     return this.tables.filter((table) => table.status === 'OCCUPIED').length;
+  }
+
+  get reservationCount(): number {
+    return this.tables.filter((table) => table.nextReservation).length;
   }
 
   ngOnInit(): void {

@@ -21,6 +21,13 @@
   article > p, .order small { color: var(--muted); }
   .order { border-top: 1px solid var(--line); display: grid; gap: .25rem; padding-top: .75rem; }
   .order span { font-size: 1.15rem; font-weight: 800; }
+  .reservation { border-left: 4px solid var(--signal); border-top: 1px solid var(--line); display: grid; gap: .3rem; margin-top: .75rem; padding: .75rem 0 .1rem .75rem; }
+  .reservation > div { align-items: start; display: flex; gap: .5rem; justify-content: space-between; }
+  .reservation small { color: var(--muted); font-size: .62rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .reservation > div strong { font-size: .78rem; text-align: right; }
+  .reservation > span { font-size: .65rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+  .reservation > span[data-status='CONFIRMED'] { color: var(--success); }
+  .reservation p { font-size: .8rem; margin: 0; }
   article footer { border-top: 1px solid var(--line); margin-top: .75rem; padding-top: .75rem; }
   article footer { align-items: center; display: flex; flex-wrap: wrap; gap: .4rem; }
   article footer a { color: var(--signal); font-size: .72rem; font-weight: 800; text-decoration: none; text-transform: uppercase; }

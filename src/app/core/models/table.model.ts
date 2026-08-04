@@ -18,6 +18,13 @@ export interface TableOverview extends RestaurantTable {
     createdAt: string;
     waiter: { id: string; name: string } | null;
   } | null;
+  nextReservation: {
+    id: string;
+    customerName: string;
+    guests: number;
+    reservationAt: string;
+    status: 'PENDING' | 'CONFIRMED';
+  } | null;
 }
 
 export function tableLabel(table?: RestaurantTable | null): string {

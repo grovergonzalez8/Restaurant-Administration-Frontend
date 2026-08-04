@@ -14,6 +14,13 @@ describe('DiningRoomComponent', () => {
     capacity: 4,
     status: 'FREE',
     activeOrder: null,
+    nextReservation: {
+      id: 'reservation-1',
+      customerName: 'Ana Pérez',
+      guests: 4,
+      reservationAt: '2026-08-04T20:00:00.000Z',
+      status: 'CONFIRMED',
+    },
   };
   const occupiedTable: TableOverview = {
     id: 'table-2',
@@ -27,6 +34,7 @@ describe('DiningRoomComponent', () => {
       createdAt: '2026-08-03T18:00:00.000Z',
       waiter: { id: 'waiter-1', name: 'Carlos Mesero' },
     },
+    nextReservation: null,
   };
   let tables: jasmine.SpyObj<TablesService>;
   let realtimeCallbacks: Record<string, () => void>;
@@ -73,7 +81,10 @@ describe('DiningRoomComponent', () => {
 
     expect(fixture.componentInstance.freeCount).toBe(1);
     expect(fixture.componentInstance.occupiedCount).toBe(1);
+    expect(fixture.componentInstance.reservationCount).toBe(1);
     expect(fixture.nativeElement.textContent).toContain('Lista para cobrar');
+    expect(fixture.nativeElement.textContent).toContain('Ana Pérez');
+    expect(fixture.nativeElement.textContent).toContain('Confirmada');
     expect(fixture.nativeElement.textContent).toContain('Crear orden');
     expect(fixture.nativeElement.textContent).toContain('Ver orden');
   });
@@ -83,6 +94,15 @@ describe('DiningRoomComponent', () => {
     fixture.detectChanges();
 
     realtimeCallbacks['order.updated']();
+
+    expect(tables.overview).toHaveBeenCalledTimes(2);
+  });
+
+  it('refreshes the room when a reservation changes', () => {
+    const fixture = TestBed.createComponent(DiningRoomComponent);
+    fixture.detectChanges();
+
+    realtimeCallbacks['reservation.updated']();
 
     expect(tables.overview).toHaveBeenCalledTimes(2);
   });
