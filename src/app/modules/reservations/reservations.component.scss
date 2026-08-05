@@ -16,11 +16,15 @@
   .schedule-fields { display: grid; gap: .75rem; grid-template-columns: .6fr 1.4fr; }
   .availability, .empty { color: #666; font-size: .82rem; }
   .list article { border-bottom: 1px solid #ddd; padding: 1rem 0; }
+  .list article[data-timing='OVERDUE'] { border-left: 4px solid #b00020; padding-left: .75rem; }
   .list strong, .list > article > span, .list small { display: block; }
   .list small { color: #666; margin-top: .25rem; }
   .reservation-heading { align-items: center; display: flex; gap: .75rem; justify-content: space-between; }
   .status { border-left: 4px solid #e6a800; font-size: .66rem; font-weight: 800; padding: .25rem .4rem; text-transform: uppercase; }
   .status[data-status='CONFIRMED'] { border-left-color: #138a43; }
+  .timing { color: #666; font-size: .66rem; font-weight: 800; letter-spacing: .06em; margin: .35rem 0; text-transform: uppercase; }
+  .timing[data-timing='OVERDUE'] { color: #b00020; }
+  .timing[data-timing='DUE_SOON'] { color: #a15c00; }
   .actions { margin-top: .65rem; }
   .error { color: #b00020; font-weight: 700; }
   .success { color: #137333; font-weight: 700; }

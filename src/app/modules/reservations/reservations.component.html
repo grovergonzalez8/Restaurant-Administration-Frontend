@@ -53,15 +53,18 @@
     </form>
 
     <div class="list">
-      <h2>Próximas reservas</h2>
+      <h2>Reservas activas</h2>
       <p class="empty" *ngIf="loading">Cargando agenda…</p>
-      <p class="empty" *ngIf="!loading && !reservations.length">No hay reservas próximas.</p>
+      <p class="empty" *ngIf="!loading && !reservations.length">No hay reservas pendientes de atención.</p>
 
-      <article *ngFor="let reservation of reservations">
+      <article *ngFor="let reservation of reservations" [attr.data-timing]="reservationTiming(reservation.reservationAt)">
         <div class="reservation-heading">
           <strong>{{ reservation.customerName }}</strong>
           <span class="status" [attr.data-status]="reservation.status">{{ statusLabel(reservation.status) }}</span>
         </div>
+        <span class="timing" [attr.data-timing]="reservationTiming(reservation.reservationAt)">
+          {{ reservationTimingLabel(reservationTiming(reservation.reservationAt)) }}
+        </span>
         <span>{{ tableName(reservation.table) }} · {{ reservation.guests }} personas</span>
         <small>{{ reservation.reservationAt | date:'medium' }} · {{ reservation.phone }}</small>
         <p *ngIf="reservation.note">{{ reservation.note }}</p>

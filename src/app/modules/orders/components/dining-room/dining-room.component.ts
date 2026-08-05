@@ -3,6 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TableOverview } from '../../../../core/models/table.model';
+import {
+  reservationTiming as getReservationTiming,
+  reservationTimingLabel as getReservationTimingLabel,
+} from '../../../../core/models/reservation.model';
 import { RealtimeService } from '../../../../core/services/realtime.service';
 import { AuthService } from '../../../auth/auth.service';
 import { normalizeRole } from '../../../auth/role-access';
@@ -16,6 +20,8 @@ import { TablesService } from '../../tables.service';
   styleUrl: './dining-room.component.scss',
 })
 export class DiningRoomComponent implements OnInit {
+  readonly reservationTiming = getReservationTiming;
+  readonly reservationTimingLabel = getReservationTimingLabel;
   tables: TableOverview[] = [];
   loading = true;
   saving = false;

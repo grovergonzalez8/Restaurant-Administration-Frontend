@@ -124,4 +124,14 @@ describe('ReservationsComponent', () => {
 
     expect(service.status).not.toHaveBeenCalled();
   });
+
+  it('marks unresolved reservations past their scheduled time for attention', () => {
+    const component = TestBed.createComponent(ReservationsComponent).componentInstance;
+    const timing = component.reservationTiming(
+      new Date(Date.now() - 60_000).toISOString(),
+    );
+
+    expect(timing).toBe('OVERDUE');
+    expect(component.reservationTimingLabel(timing)).toBe('Requiere atención');
+  });
 });

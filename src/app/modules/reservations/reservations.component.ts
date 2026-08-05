@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import {
   Reservation,
   ReservationStatus,
+  reservationTiming as getReservationTiming,
+  reservationTimingLabel as getReservationTimingLabel,
 } from '../../core/models/reservation.model';
 import { RestaurantTable, tableLabel } from '../../core/models/table.model';
 import { ReservationsService } from './reservations.service';
@@ -23,6 +25,8 @@ interface StatusAction {
   styleUrl: './reservations.component.scss',
 })
 export class ReservationsComponent implements OnInit {
+  readonly reservationTiming = getReservationTiming;
+  readonly reservationTimingLabel = getReservationTimingLabel;
   reservations: Reservation[] = [];
   tables: RestaurantTable[] = [];
   loading = false;

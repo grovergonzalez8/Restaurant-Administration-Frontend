@@ -7,7 +7,7 @@
   <div class="summary" aria-label="Resumen del salón">
     <span><strong>{{ freeCount }}</strong> libres</span>
     <span><strong>{{ occupiedCount }}</strong> ocupadas</span>
-    <span><strong>{{ reservationCount }}</strong> con reserva próxima</span>
+    <span><strong>{{ reservationCount }}</strong> con reserva activa</span>
     <span><strong>{{ tables.length }}</strong> totales</span>
   </div>
 
@@ -46,15 +46,19 @@
       </header>
       <p>{{ table.capacity }} lugares</p>
 
-      <div class="reservation" *ngIf="table.nextReservation as reservation">
+      <div class="reservation" *ngIf="table.nextReservation as reservation" [attr.data-timing]="reservationTiming(reservation.reservationAt)">
         <div>
-          <small>Próxima reserva</small>
+          <small>Reserva activa</small>
           <strong>{{ reservation.reservationAt | date:'short' }}</strong>
         </div>
         <span [attr.data-status]="reservation.status">
           {{ reservation.status === 'CONFIRMED' ? 'Confirmada' : 'Pendiente' }}
         </span>
+        <small class="timing" [attr.data-timing]="reservationTiming(reservation.reservationAt)">
+          {{ reservationTimingLabel(reservationTiming(reservation.reservationAt)) }}
+        </small>
         <p>{{ reservation.customerName }} · {{ reservation.guests }} comensales</p>
+        <a routerLink="/reservations">Gestionar reserva →</a>
       </div>
 
       <div class="order" *ngIf="table.activeOrder as order">

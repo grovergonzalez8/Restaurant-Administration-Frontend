@@ -107,6 +107,17 @@ describe('DiningRoomComponent', () => {
     expect(tables.overview).toHaveBeenCalledTimes(2);
   });
 
+  it('identifies reservations that require immediate attention', () => {
+    const component = TestBed.createComponent(DiningRoomComponent).componentInstance;
+
+    const timing = component.reservationTiming(
+      new Date(Date.now() - 60_000).toISOString(),
+    );
+
+    expect(timing).toBe('OVERDUE');
+    expect(component.reservationTimingLabel(timing)).toBe('Requiere atención');
+  });
+
   it('keeps hosts in read-only mode', () => {
     role = 'host';
     const component = TestBed.createComponent(DiningRoomComponent).componentInstance;
