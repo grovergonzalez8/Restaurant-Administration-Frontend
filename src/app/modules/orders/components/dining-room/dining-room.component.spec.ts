@@ -136,4 +136,30 @@ describe('DiningRoomComponent', () => {
 
     expect(component.canEditTable(occupiedTable)).toBeFalse();
   });
+
+  it('keeps a table available for its active reservation', () => {
+    role = 'admin';
+    const component = TestBed.createComponent(DiningRoomComponent).componentInstance;
+    component.tables = [freeTable];
+    component.edit(freeTable);
+    component.form.status = 'OUT_OF_SERVICE';
+
+    component.saveTable();
+
+    expect(tables.update).not.toHaveBeenCalled();
+    expect(component.error).toContain('próxima reserva');
+  });
+
+  it('preserves the capacity needed by the active reservation', () => {
+    role = 'admin';
+    const component = TestBed.createComponent(DiningRoomComponent).componentInstance;
+    component.tables = [freeTable];
+    component.edit(freeTable);
+    component.form.capacity = 3;
+
+    component.saveTable();
+
+    expect(tables.update).not.toHaveBeenCalled();
+    expect(component.error).toContain('4 lugares');
+  });
 });

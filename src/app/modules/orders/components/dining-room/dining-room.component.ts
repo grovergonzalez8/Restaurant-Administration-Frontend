@@ -60,6 +60,10 @@ export class DiningRoomComponent implements OnInit {
     return this.tables.filter((table) => table.nextReservation).length;
   }
 
+  get editingTable(): TableOverview | null {
+    return this.tables.find((table) => table.id === this.editingId) || null;
+  }
+
   ngOnInit(): void {
     this.load();
   }
@@ -120,6 +124,15 @@ export class DiningRoomComponent implements OnInit {
     }
     if (!Number.isInteger(this.form.capacity) || this.form.capacity < 1) {
       this.error = 'La capacidad debe ser un entero positivo.';
+      return;
+    }
+    const reservation = this.editingTable?.nextReservation;
+    if (reservation && this.form.status === 'OUT_OF_SERVICE') {
+      this.error = 'La mesa debe permanecer disponible para su próxima reserva.';
+      return;
+    }
+    if (reservation && this.form.capacity < reservation.guests) {
+      this.error = `La capacidad mínima es de ${reservation.guests} lugares por la próxima reserva.`;
       return;
     }
     this.saving = true;
