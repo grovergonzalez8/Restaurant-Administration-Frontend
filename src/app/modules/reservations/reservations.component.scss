@@ -15,6 +15,11 @@
   form, .list { background: #fff; border-top: 5px solid #111; padding: 1.5rem; }
   .schedule-fields { display: grid; gap: .75rem; grid-template-columns: .6fr 1.4fr; }
   .availability, .empty { color: #666; font-size: .82rem; }
+  .filters { align-items: end; border-bottom: 1px solid #ddd; display: grid; gap: .6rem; grid-template-columns: repeat(3, 1fr) auto; padding-bottom: 1rem; }
+  .filters label { margin: 0; }
+  .filters input, .filters select { margin-bottom: 0; }
+  .filters button { margin: 0; }
+  .filter-summary { color: #666; font-size: .72rem; font-weight: 800; text-transform: uppercase; }
   .list article { border-bottom: 1px solid #ddd; padding: 1rem 0; }
   .list article[data-timing='OVERDUE'] { border-left: 4px solid #b00020; padding-left: .75rem; }
   .list strong, .list > article > span, .list small { display: block; }
@@ -32,4 +37,5 @@
 
 @media (max-width: 650px) {
   .reservations .layout, .reservations .schedule-fields { grid-template-columns: 1fr; }
+  .reservations .filters { grid-template-columns: 1fr; }
 }

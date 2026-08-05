@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import {
   Reservation,
   ReservationStatus,
+  ReservationTiming,
   reservationTiming as getReservationTiming,
   reservationTimingLabel as getReservationTimingLabel,
 } from '../../core/models/reservation.model';
@@ -16,6 +17,9 @@ interface StatusAction {
   status: ReservationStatus;
   label: string;
 }
+
+type ReservationStatusFilter = 'ALL' | 'PENDING' | 'CONFIRMED';
+type ReservationTimingFilter = 'ALL' | ReservationTiming;
 
 @Component({
   selector: 'app-reservations',
@@ -37,6 +41,11 @@ export class ReservationsComponent implements OnInit {
   error = '';
   success = '';
   form = this.emptyForm();
+  filters: {
+    date: string;
+    status: ReservationStatusFilter;
+    timing: ReservationTimingFilter;
+  } = { date: '', status: 'ALL', timing: 'ALL' };
 
   constructor(
     private readonly service: ReservationsService,
@@ -50,6 +59,28 @@ export class ReservationsComponent implements OnInit {
 
   get canTakeOrder(): boolean {
     return ['admin', 'waiter'].includes(this.auth.user()?.role?.name || '');
+  }
+
+  get filteredReservations(): Reservation[] {
+    return this.reservations.filter((reservation) => {
+      const matchesDate =
+        !this.filters.date ||
+        this.reservationDateKey(reservation.reservationAt) === this.filters.date;
+      const matchesStatus =
+        this.filters.status === 'ALL' || reservation.status === this.filters.status;
+      const matchesTiming =
+        this.filters.timing === 'ALL' ||
+        this.reservationTiming(reservation.reservationAt) === this.filters.timing;
+      return matchesDate && matchesStatus && matchesTiming;
+    });
+  }
+
+  get hasActiveFilters(): boolean {
+    return Boolean(
+      this.filters.date ||
+        this.filters.status !== 'ALL' ||
+        this.filters.timing !== 'ALL',
+    );
   }
 
   ngOnInit(): void {
@@ -76,6 +107,10 @@ export class ReservationsComponent implements OnInit {
     this.tables = [];
     this.availabilityChecked = false;
     this.success = '';
+  }
+
+  clearFilters(): void {
+    this.filters = { date: '', status: 'ALL', timing: 'ALL' };
   }
 
   checkAvailability(): void {
@@ -222,6 +257,14 @@ export class ReservationsComponent implements OnInit {
     if (!this.form.reservationAt) return null;
     const value = new Date(this.form.reservationAt);
     return Number.isNaN(value.getTime()) ? null : value;
+  }
+
+  private reservationDateKey(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${date.getFullYear()}-${month}-${day}`;
   }
 
   private emptyForm() {

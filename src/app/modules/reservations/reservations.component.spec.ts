@@ -134,4 +134,34 @@ describe('ReservationsComponent', () => {
     expect(timing).toBe('OVERDUE');
     expect(component.reservationTimingLabel(timing)).toBe('Requiere atención');
   });
+
+  it('filters the active agenda by date, status and attention', () => {
+    const component = TestBed.createComponent(ReservationsComponent).componentInstance;
+    const confirmed: Reservation = {
+      ...pending,
+      id: 'reservation-2',
+      status: 'CONFIRMED',
+      reservationAt: new Date(2099, 7, 3, 12).toISOString(),
+    };
+    component.reservations = [pending, confirmed];
+    component.filters.status = 'CONFIRMED';
+    component.filters.date = '2099-08-03';
+    component.filters.timing = 'SCHEDULED';
+
+    expect(component.filteredReservations).toEqual([confirmed]);
+  });
+
+  it('clears all agenda filters', () => {
+    const component = TestBed.createComponent(ReservationsComponent).componentInstance;
+    component.filters = {
+      date: '2030-05-10',
+      status: 'PENDING',
+      timing: 'OVERDUE',
+    };
+
+    component.clearFilters();
+
+    expect(component.filters).toEqual({ date: '', status: 'ALL', timing: 'ALL' });
+    expect(component.hasActiveFilters).toBeFalse();
+  });
 });
