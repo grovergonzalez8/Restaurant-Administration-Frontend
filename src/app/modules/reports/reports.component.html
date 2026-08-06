@@ -1,1 +1,41 @@
-<section class="reports"><header><p>Administración / análisis</p><h1>Reportes</h1></header><form class="filters" (ngSubmit)="load()"><label>Desde<input type="date" [(ngModel)]="from" name="from"></label><label>Hasta<input type="date" [(ngModel)]="to" name="to"></label><button>Aplicar periodo</button></form><p class="error" *ngIf="error">{{error}}</p><p *ngIf="loading">Actualizando datos…</p><div class="metrics" *ngIf="sales"><article><span>Ventas</span><strong>{{sales.total | currency:'USD'}}</strong><small>{{sales.payments}} pagos</small></article><article><span>Efectivo</span><strong>{{sales.byMethod.CASH | currency:'USD'}}</strong></article><article><span>Tarjeta</span><strong>{{sales.byMethod.CARD | currency:'USD'}}</strong></article><article><span>QR</span><strong>{{sales.byMethod.QR | currency:'USD'}}</strong></article></div><div class="grid"><article class="panel"><h2>Productos más vendidos</h2><div class="product" *ngFor="let product of products; let i=index"><span>0{{i+1}}</span><strong>{{product.name}}</strong><small>{{product.quantity}} unidades · {{product.sales | currency:'USD'}}</small></div><p *ngIf="!products.length">No hay ventas en este periodo.</p></article><article class="panel" *ngIf="inventory"><h2>Movimientos de inventario</h2><div class="inventory"><span>Entradas<strong>{{inventory.entries}}</strong></span><span>Salidas<strong>{{inventory.outputs}}</strong></span></div><p>{{inventory.movements.entries}} entradas y {{inventory.movements.outputs}} salidas registradas.</p></article></div></section>
+<section class="reports">
+  <header><p>Administración / análisis</p><h1>Reportes</h1></header>
+  <form class="filters" (ngSubmit)="load()">
+    <label>Desde<input type="date" [(ngModel)]="from" name="from" /></label>
+    <label>Hasta<input type="date" [(ngModel)]="to" name="to" /></label>
+    <button>Aplicar periodo</button>
+  </form>
+  <p class="error" *ngIf="error">{{ error }}</p>
+  <p *ngIf="loading">Actualizando datos…</p>
+  <div class="metrics" *ngIf="sales">
+    <article><span>Ventas</span><strong>{{ sales.total | currency: 'USD' }}</strong><small>{{ sales.payments }} pagos</small></article>
+    <article><span>Efectivo</span><strong>{{ sales.byMethod.CASH | currency: 'USD' }}</strong></article>
+    <article><span>Tarjeta</span><strong>{{ sales.byMethod.CARD | currency: 'USD' }}</strong></article>
+    <article><span>QR</span><strong>{{ sales.byMethod.QR | currency: 'USD' }}</strong></article>
+  </div>
+  <div class="grid">
+    <article class="panel">
+      <h2>Productos más vendidos</h2>
+      <div class="product" *ngFor="let product of products; let i = index">
+        <span>0{{ i + 1 }}</span><strong>{{ product.name }}</strong>
+        <small>{{ product.quantity }} unidades · {{ product.sales | currency: 'USD' }}</small>
+      </div>
+      <p *ngIf="!products.length">No hay ventas en este periodo.</p>
+    </article>
+    <article class="panel" *ngIf="inventory">
+      <h2>Movimientos de inventario</h2>
+      <div class="inventory-summary">
+        <span>Entradas<strong>{{ inventory.movements.entries }}</strong><small>movimientos</small></span>
+        <span>Salidas<strong>{{ inventory.movements.outputs }}</strong><small>movimientos</small></span>
+      </div>
+      <div class="inventory-item" *ngFor="let item of inventory.items">
+        <div>
+          <strong>{{ item.name }}</strong>
+          <small>Entró {{ item.entries | number: '1.0-2' }} {{ item.unit }} · Salió {{ item.outputs | number: '1.0-2' }} {{ item.unit }}</small>
+        </div>
+        <span [class.negative]="item.net < 0">{{ item.net > 0 ? '+' : '' }}{{ item.net | number: '1.0-2' }} {{ item.unit }}</span>
+      </div>
+      <p *ngIf="!inventory.items.length">No hay movimientos en este periodo.</p>
+    </article>
+  </div>
+</section>
